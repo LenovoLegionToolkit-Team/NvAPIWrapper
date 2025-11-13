@@ -13,42 +13,42 @@
         /// <summary>
         ///     Synchronous dynamic random-access memory
         /// </summary>
-        SDRAM,
+        SDRAM = 1,
 
         /// <summary>
         ///     Double Data Rate Synchronous Dynamic Random-Access Memory
         /// </summary>
-        DDR1,
+        DDR1 = 2,
 
         /// <summary>
         ///     Double Data Rate 2 Synchronous Dynamic Random-Access Memory
         /// </summary>
-        DDR2,
+        DDR2 = 3,
 
         /// <summary>
         ///     Graphics Double Data Rate 2 Synchronous Dynamic Random-Access Memory
         /// </summary>
-        GDDR2,
+        GDDR2 = 4,
 
         /// <summary>
         ///     Graphics Double Data Rate 3 Synchronous Dynamic Random-Access Memory
         /// </summary>
-        GDDR3,
+        GDDR3 = 5,
 
         /// <summary>
         ///     Graphics Double Data Rate 4 Synchronous Dynamic Random-Access Memory
         /// </summary>
-        GDDR4,
+        GDDR4 = 6,
 
         /// <summary>
         ///     Double Data Rate 3 Synchronous Dynamic Random-Access Memory
         /// </summary>
-        DDR3,
+        DDR3 = 7,
 
         /// <summary>
         ///     Graphics Double Data Rate 5 Synchronous Dynamic Random-Access Memory
         /// </summary>
-        GDDR5,
+        GDDR5 = 8,
 
         /// <summary>
         ///     Lowe Power Double Data Rate 2 Synchronous Dynamic Random-Access Memory
@@ -58,21 +58,21 @@
         /// <summary>
         ///     Graphics Double Data Rate 5X Synchronous Dynamic Random-Access Memory
         /// </summary>
-        GDDR5X,
+        GDDR5X = 10,
 
         /// <summary>
         ///     Graphics Double Data Rate 6 Synchronous Dynamic Random-Access Memory
         /// </summary>
-        GDDR6,
+        GDDR6 = 14,
 
         /// <summary>
         ///     Graphics Double Data Rate 6X Synchronous Dynamic Random-Access Memory
         /// </summary>
-        GDDR6X,
+        GDDR6X = 15,
 
         /// <summary>
         ///     Graphics Double Data Rate 7X Synchronous Dynamic Random-Access Memory
         /// </summary>
-        GDDR7,
+        GDDR7 = 16,
     }
 }
