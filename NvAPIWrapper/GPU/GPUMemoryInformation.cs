@@ -166,6 +166,9 @@ namespace NvAPIWrapper.GPU
                 case GPUMemoryType.LPDDR2:
                 case GPUMemoryType.GDDR5:
                 case GPUMemoryType.GDDR5X:
+                case GPUMemoryType.GDDR6:
+                case GPUMemoryType.GDDR6X:
+                case GPUMemoryType.GDDR7:
 
                     // Bus Clocks Per Internal Clock = 2
                     return 2;
@@ -203,6 +206,9 @@ namespace NvAPIWrapper.GPU
                     // Transfers Per Internal Clock = 2
                     return 4;
                 case GPUMemoryType.GDDR5X:
+                case GPUMemoryType.GDDR6:
+                case GPUMemoryType.GDDR6X:
+                case GPUMemoryType.GDDR7:
 
                     // Transfers Per Internal Clock = 4
                     return 8;

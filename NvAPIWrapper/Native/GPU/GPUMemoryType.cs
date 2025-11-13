@@ -58,6 +58,21 @@
         /// <summary>
         ///     Graphics Double Data Rate 5X Synchronous Dynamic Random-Access Memory
         /// </summary>
-        GDDR5X
+        GDDR5X,
+
+        /// <summary>
+        ///     Graphics Double Data Rate 6 Synchronous Dynamic Random-Access Memory
+        /// </summary>
+        GDDR6,
+
+        /// <summary>
+        ///     Graphics Double Data Rate 6X Synchronous Dynamic Random-Access Memory
+        /// </summary>
+        GDDR6X,
+
+        /// <summary>
+        ///     Graphics Double Data Rate 7X Synchronous Dynamic Random-Access Memory
+        /// </summary>
+        GDDR7,
     }
 }
