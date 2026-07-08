@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks>netstandard2.0</TargetFrameworks>
@@ -6,18 +6,20 @@
     <Version>0.8.1.112</Version>
     <Company>falahati.net</Company>
     <Description>NvAPIWrapper is a .Net wrapper for NVIDIA public API</Description>
-    <Authors>Soroush Falahati</Authors>
+    <Authors>Soroush Falahati, LenovoLegionToolkit-Team</Authors>
     <Copyright>Copyright © Soroush Falahati 2018 (falahati.net)</Copyright>
     <Platforms>AnyCPU</Platforms>
     <Product>NvAPIWrapper.Net</Product>
-    <PackageProjectUrl>https://github.com/falahati/NvAPIWrapper</PackageProjectUrl>
-    <PackageLicenseUrl>https://github.com/falahati/NvAPIWrapper/blob/master/LICENSE</PackageLicenseUrl>
-    <PackageIconUrl>https://github.com/falahati/NvAPIWrapper/blob/master/NvAPIWrapper/Icon.png?raw=true</PackageIconUrl>
+    <PackageProjectUrl>https://github.com/LenovoLegionToolkit-Team/NvAPIWrapper</PackageProjectUrl>
+    <PackageLicenseUrl>https://github.com/LenovoLegionToolkit-Team/NvAPIWrapper/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageIconUrl>https://github.com/LenovoLegionToolkit-Team/NvAPIWrapper/blob/master/NvAPIWrapper/Icon.png?raw=true</PackageIconUrl>
+    <RepositoryUrl>https://github.com/LenovoLegionToolkit-Team/NvAPIWrapper</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
     <IncludeSymbols>true</IncludeSymbols>
     <IncludeSource>true</IncludeSource>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <Title>NvAPIWrapper (for NVAPI 560)</Title>
-    <PackageId>NvAPIWrapper.Net</PackageId>
+    <PackageId>LLT.NvAPIWrapper.Net</PackageId>
     <AssemblyOriginatorKeyFile>OpenSourceStrongNameSignKey.pfx</AssemblyOriginatorKeyFile>
     <GenerateDocumentationFile>True</GenerateDocumentationFile>
     <SignAssembly>False</SignAssembly>

@@ -1,7 +1,7 @@
 ## <img src="NvAPIWrapper/Icon.png" width="24" alt="NvAPIWrapper"> NvAPIWrapper (for NVAPI R560)
-[![](https://img.shields.io/github/license/tebjan/NvAPIWrapper.svg?style=flat-square)](https://github.com/tebjan/NvAPIWrapper/blob/master/LICENSE)
-[![](https://img.shields.io/github/commit-activity/y/tebjan/NvAPIWrapper.svg?style=flat-square)](https://github.com/tebjan/NvAPIWrapper/commits/master)
-[![](https://img.shields.io/github/issues/tebjan/NvAPIWrapper.svg?style=flat-square)](https://github.com/tebjan/NvAPIWrapper/issues)
+[![](https://img.shields.io/github/license/LenovoLegionToolkit-Team/NvAPIWrapper.svg?style=flat-square)](https://github.com/LenovoLegionToolkit-Team/NvAPIWrapper/blob/master/LICENSE)
+[![](https://img.shields.io/github/commit-activity/y/LenovoLegionToolkit-Team/NvAPIWrapper.svg?style=flat-square)](https://github.com/LenovoLegionToolkit-Team/NvAPIWrapper/commits/master)
+[![](https://img.shields.io/github/issues/LenovoLegionToolkit-Team/NvAPIWrapper.svg?style=flat-square)](https://github.com/LenovoLegionToolkit-Team/NvAPIWrapper/issues)
 
 > [!NOTE]
 > This is a modified fork of the original [NvAPIWrapper](https://github.com/tebjan/NvAPIWrapper) library maintained for the [Lenovo Legion Toolkit](https://github.com/LenovoLegionToolkit-Team/LenovoLegionToolkit) project.
@@ -17,10 +17,10 @@ This project is licensed under LGPL and can be used in closed-source or commerci
 
 ## How to get
 **Note:** There is currently no new NuGet package for this fork. The previous version is still available, but an updated release is planned for the future.
-[![](https://img.shields.io/nuget/dt/NvAPIWrapper.Net.svg?style=flat-square)](https://www.nuget.org/packages/NvAPIWrapper.Net)
-[![](https://img.shields.io/nuget/v/NvAPIWrapper.Net.svg?style=flat-square)](https://www.nuget.org/packages/NvAPIWrapper.Net)
+[![](https://img.shields.io/nuget/dt/LLT.NvAPIWrapper.Net.svg?style=flat-square)](https://www.nuget.org/packages/LLT.NvAPIWrapper.Net)
+[![](https://img.shields.io/nuget/v/LLT.NvAPIWrapper.Net.svg?style=flat-square)](https://www.nuget.org/packages/LLT.NvAPIWrapper.Net)
 
-This library is available for download and use through the <a href="https://www.nuget.org/packages/NvAPIWrapper.Net">NuGet Gallery</a>.
+This library is available for download and use through the <a href="https://www.nuget.org/packages/LLT.NvAPIWrapper.Net">NuGet Gallery</a>.
 
 ## What's Supported
 NvAPIWrapper is not a complete wrapper of NVAPI yet. Below is a list of supported features:
@@ -82,7 +82,7 @@ NvAPIWrapper is not a complete wrapper of NVAPI yet. Below is a list of supporte
 - [ ] **OpenGL:** No Support
 - [ ] **Video:** No Support
 
-If a feature you need is missing, feel free to open an [issue](https://github.com/tebjan/NvAPIWrapper/issues).
+If a feature you need is missing, feel free to open an [issue](https://github.com/LenovoLegionToolkit-Team/NvAPIWrapper/issues).
 
 ## How to use
 NvAPIWrappr allows you to use the NVAPI functions directly (a.k.a. the low-level API) using the `NvAPIWrapper.Native` namespace. However, there is also a .Net friendly implementation of the NVAPI features (a.k.a. the high-level API) that can be used to minimize the complexity of your code and makes it more compatible with later releases of the library, therefore, I strongly recommend using these classes instead of using the native functions directly.

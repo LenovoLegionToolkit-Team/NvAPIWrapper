@@ -249,3 +249,4 @@ R410-developer/*
 
 # Custom
 R470-developer/*
+*.msbump.lock
