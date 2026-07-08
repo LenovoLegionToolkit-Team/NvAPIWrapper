@@ -28,18 +28,11 @@
     <OutputPath>..\Debug</OutputPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
-    <BumpRevision>True</BumpRevision>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <OutputPath>..\Release</OutputPath>
     <DocumentationFile>..\Release\NvAPIWrapper.xml</DocumentationFile>
     <SignAssembly>False</SignAssembly>
   </PropertyGroup>
-  <ItemGroup>
-    <PackageReference PrivateAssets="all" Include="MSBump" Version="2.3.2">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
-    </PackageReference>
-  </ItemGroup>
   <ItemGroup>
     <Content Include="readme.txt">
       <Pack>true</Pack>
