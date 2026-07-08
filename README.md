@@ -3,6 +3,9 @@
 [![](https://img.shields.io/github/commit-activity/y/tebjan/NvAPIWrapper.svg?style=flat-square)](https://github.com/tebjan/NvAPIWrapper/commits/master)
 [![](https://img.shields.io/github/issues/tebjan/NvAPIWrapper.svg?style=flat-square)](https://github.com/tebjan/NvAPIWrapper/issues)
 
+> [!NOTE]
+> This is a modified fork of the original [NvAPIWrapper](https://github.com/tebjan/NvAPIWrapper) library maintained for the [Lenovo Legion Toolkit](https://github.com/LenovoLegionToolkit-Team/LenovoLegionToolkit) project.
+
 ### **Note:**
 This is a new fork of the NvAPIWrapper project. The repository has been updated to support **NVAPI R560**, incorporating the latest changes and improvements.
 
