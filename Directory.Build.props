@@ -1,15 +1,13 @@
 <Project>
   <PropertyGroup>
-    <!-- Base version components: update these when bumping the version -->
     <VersionMajor>0</VersionMajor>
     <VersionMinor>8</VersionMinor>
     <VersionBase>$(VersionMajor).$(VersionMinor)</VersionBase>
     <Authors>Soroush Falahati, LenovoLegionToolkit-Team</Authors>
-    <Copyright>Copyright © Soroush Falahati (falahati.net)</Copyright>
+    <Copyright>Copyright © 2026</Copyright>
     <RepositoryUrl>https://github.com/LenovoLegionToolkit-Team/NvAPIWrapper</RepositoryUrl>
     <PackageProjectUrl>https://github.com/LenovoLegionToolkit-Team/NvAPIWrapper</PackageProjectUrl>
     <RepositoryType>git</RepositoryType>
-    <!-- Prevent SourceLink from appending a second commit SHA to InformationalVersion -->
     <IncludeSourceRevisionInInformationalVersion>false</IncludeSourceRevisionInInformationalVersion>
   </PropertyGroup>
 </Project>
