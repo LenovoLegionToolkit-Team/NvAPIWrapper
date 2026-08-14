@@ -637,6 +637,66 @@
         /// <summary>
         ///     No display found on Nvidia GPU(s).
         /// </summary>
-        NVIDIADisplayNotFound = -210
-    }
+        NVIDIADisplayNotFound = -210,
+
+        /// <summary>
+        ///     Privilege level exceeded.
+        /// </summary>
+        PrivilegeLevelExceeded = -211,
+
+        /// <summary>
+        ///     D3D Device was removed.
+        /// </summary>
+        D3DDeviceRemoved = -212,
+
+        /// <summary>
+        ///     Location not found.
+        /// </summary>
+        LocationNotFound = -213,
+
+        /// <summary>
+        ///     Topology is not supported.
+        /// </summary>
+        TopologyNotSupported = -214,
+
+        /// <summary>
+        ///     DxgkDdi failure occurred.
+        /// </summary>
+        DxgkDdiFailure = -215,
+
+        /// <summary>
+        ///     Display mismatch.
+        /// </summary>
+        DisplayMismatch = -216,
+
+        /// <summary>
+        ///     Unmatched state.
+        /// </summary>
+        UnmatchedState = -217,
+
+        /// <summary>
+        ///     Sync is not active or available.
+        /// </summary>
+        SyncNotActiveOrAvailable = -218,
+
+        /// <summary>
+        ///     Sync invalid parameter.
+        /// </summary>
+        SyncInvalidParameter = -219,
+
+        /// <summary>
+        ///     GPU is not powered.
+        /// </summary>
+        GpuNotPowered = -220,
+
+        /// <summary>
+        ///     GPU firmware hit a breakpoint.
+        /// </summary>
+        GpuFirmwareBreakpoint = -221,
+
+        /// <summary>
+        ///     GPU firmware encountered an error.
+        /// </summary>
+        GpuFirmwareError = -222
+    }    
 }
