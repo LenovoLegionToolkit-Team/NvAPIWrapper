@@ -1,4 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics.CodeAnalysis;
 
 namespace NvAPIWrapper.Native.Helpers
 {
@@ -756,8 +756,10 @@ namespace NvAPIWrapper.Native.Helpers
         NvAPI_GPU_SetPixelClockRange = 0x5AC7F8E5,
         NvAPI_GPU_SetPowerMizerInfo = 0x50016C78,
         NvAPI_GPU_SetPstateClientLimits = 0x0FDFC7D49,
+        NvAPI_GPU_SetPstateLimit = 0x0B4B33D7,
         NvAPI_GPU_SetPstates20 = 0x0F4DAE6B,
         NvAPI_GPU_SetPstatesInfo = 0x0CDF27911,
+        NvAPI_GPU_SetRatedTdpControl = 0xC9E9BB33,
         NvAPI_GPU_SetThermalPoliciesStatus = 0x034C0B13D,
         NvAPI_Hybrid_IsAppMigrationStateChangeable = 0x584CB0B6,
         NvAPI_Hybrid_QueryBlockedMigratableApps = 0x0F4C2F8CC,

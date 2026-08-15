@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Runtime.InteropServices;
 using NvAPIWrapper.Native.Exceptions;
 using NvAPIWrapper.Native.General;
@@ -41,7 +41,6 @@ public static class D3DApi
     /// DXGI_STATUS_OCCLUDED, or D3DDDIERR_DEVICEREMOVED.
     /// Error: the communication with the D3D driver failed, SwapGroup/SwapBarrier may not be possible.
     /// ApiNotInitialized: NvAPI was not yet initialized.</returns>
-    ///</returns> 
     public static void D3D1XPresent(
         IntPtr d3dDevice,
         IntPtr dxgiSwapChain,

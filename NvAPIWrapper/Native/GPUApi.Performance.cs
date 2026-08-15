@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Diagnostics.CodeAnalysis;
 using NvAPIWrapper.Native.Exceptions;
 using NvAPIWrapper.Native.General;
@@ -515,6 +515,50 @@ namespace NvAPIWrapper.Native
                 var status = DelegateFactory.GetDelegate<Delegates.GPU.NvAPI_GPU_SetPStates20>()(
                     physicalGPUHandle,
                     performanceStateInfo
+                );
+
+                if (status != Status.Ok)
+                {
+                    throw new NVIDIAApiException(status);
+                }
+            }
+        }
+
+        /// <summary>
+        ///     [PRIVATE]
+        ///     Sets the P-State limit for the passed GPU handle.
+        /// </summary>
+        /// <param name="gpuHandle">The handle of the GPU to perform the operation on.</param>
+        /// <param name="pstateLimit">The new P-State limit configuration.</param>
+        public static void SetPstateLimit(PhysicalGPUHandle gpuHandle, PrivatePStateLimitV1 pstateLimit)
+        {
+            using (var reference = ValueTypeReference.FromValueType(pstateLimit))
+            {
+                var status = DelegateFactory.GetDelegate<Delegates.GPU.NvAPI_GPU_SetPstateLimit>()(
+                    gpuHandle,
+                    reference
+                );
+
+                if (status != Status.Ok)
+                {
+                    throw new NVIDIAApiException(status);
+                }
+            }
+        }
+
+        /// <summary>
+        ///     [PRIVATE]
+        ///     Sets the rated TDP control for the passed GPU handle.
+        /// </summary>
+        /// <param name="gpuHandle">The handle of the GPU to perform the operation on.</param>
+        /// <param name="ratedTdpControl">The new rated TDP control configuration.</param>
+        public static void SetRatedTdpControl(PhysicalGPUHandle gpuHandle, PrivateRatedTdpControlV1 ratedTdpControl)
+        {
+            using (var reference = ValueTypeReference.FromValueType(ratedTdpControl))
+            {
+                var status = DelegateFactory.GetDelegate<Delegates.GPU.NvAPI_GPU_SetRatedTdpControl>()(
+                    gpuHandle,
+                    reference
                 );
 
                 if (status != Status.Ok)

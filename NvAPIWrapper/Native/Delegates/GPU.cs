@@ -1,4 +1,4 @@
-﻿using System.Runtime.InteropServices;
+using System.Runtime.InteropServices;
 using NvAPIWrapper.Native.Attributes;
 using NvAPIWrapper.Native.Display.Structures;
 using NvAPIWrapper.Native.General;
@@ -682,6 +682,12 @@ namespace NvAPIWrapper.Native.Delegates
             [Accepts(typeof(SetIlluminationParameterV1))] [In]
             ValueTypeReference illuminationInfo);
 
+        [FunctionId(FunctionId.NvAPI_GPU_SetPstateLimit)]
+        public delegate Status NvAPI_GPU_SetPstateLimit(
+            [In] PhysicalGPUHandle physicalGpu,
+            [In] [Accepts(typeof(PrivatePStateLimitV1))]
+            ValueTypeReference pstateLimit);
+
         [FunctionId(FunctionId.NvAPI_GPU_SetPstates20)]
         public delegate Status NvAPI_GPU_SetPStates20(
             [In] PhysicalGPUHandle physicalGpu,
@@ -689,6 +695,12 @@ namespace NvAPIWrapper.Native.Delegates
                 typeof(PerformanceStates20InfoV1))]
             [In]
             ValueTypeReference performanceStatesInfo);
+
+        [FunctionId(FunctionId.NvAPI_GPU_SetRatedTdpControl)]
+        public delegate Status NvAPI_GPU_SetRatedTdpControl(
+            [In] PhysicalGPUHandle physicalGpu,
+            [In] [Accepts(typeof(PrivateRatedTdpControlV1))]
+            ValueTypeReference ratedTdpControl);
 
         [FunctionId(FunctionId.NvAPI_GPU_SetThermalPoliciesStatus)]
         public delegate Status NvAPI_GPU_SetThermalPoliciesStatus(
