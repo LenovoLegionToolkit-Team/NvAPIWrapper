@@ -18,8 +18,9 @@ namespace NvAPIWrapper.Native.GPU.Structures
         internal const int MaxNumberOfClocksPerGPU = ClockFrequenciesV1.MaxClocksPerGPU;
 
         internal StructureVersion _Version;
-        internal uint _Unknown;
+        internal uint _Unknown1;
         internal uint _ClockBoostLocksCount;
+        internal uint _Unknown2;
 
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = MaxNumberOfClocksPerGPU)]
         internal ClockBoostLock[] _ClockBoostLocks;
