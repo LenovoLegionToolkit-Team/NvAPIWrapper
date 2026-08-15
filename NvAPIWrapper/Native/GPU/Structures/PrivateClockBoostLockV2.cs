@@ -29,13 +29,13 @@ namespace NvAPIWrapper.Native.GPU.Structures
         /// </summary>
         public ClockBoostLock[] ClockBoostLocks
         {
-            get => _ClockBoostLocks?.Take((int)_ClockBoostLocksCount).ToArray() ?? Array.Empty<ClockBoostLock>();
+            get => _ClockBoostLocks.Take((int) _ClockBoostLocksCount).ToArray();
         }
 
         /// <summary>
         ///     Creates a new instance of <see cref="PrivateClockBoostLockV2" />
         /// </summary>
-        /// <param name="clockBoostLocks">The list of clock boost locks.</param>
+        /// <param name="clockBoostLocks">The list of clock boost locks</param>
         public PrivateClockBoostLockV2(ClockBoostLock[] clockBoostLocks)
         {
             if (clockBoostLocks?.Length > MaxNumberOfClocksPerGPU)
@@ -50,7 +50,7 @@ namespace NvAPIWrapper.Native.GPU.Structures
             }
 
             this = typeof(PrivateClockBoostLockV2).Instantiate<PrivateClockBoostLockV2>();
-            _ClockBoostLocksCount = (uint)clockBoostLocks.Length;
+            _ClockBoostLocksCount = (uint) clockBoostLocks.Length;
             Array.Copy(clockBoostLocks, 0, _ClockBoostLocks, 0, clockBoostLocks.Length);
         }
 
@@ -61,10 +61,10 @@ namespace NvAPIWrapper.Native.GPU.Structures
         {
             return new PrivateClockBoostLockV2(new[]
             {
+                ClockBoostLock.CreateFrequencyLock(0, frequencyInKhz),
                 ClockBoostLock.CreateFrequencyLock(1, frequencyInKhz),
-                ClockBoostLock.CreateFrequencyLock(4, frequencyInKhz),
+                ClockBoostLock.CreatePStateLock(4, stateId),
                 ClockBoostLock.CreatePStateLock(5, stateId),
-                ClockBoostLock.CreatePStateLock(1, stateId),
             });
         }
 
@@ -75,10 +75,10 @@ namespace NvAPIWrapper.Native.GPU.Structures
         {
             return new PrivateClockBoostLockV2(new[]
             {
+                ClockBoostLock.CreateDynamicReset(0),
                 ClockBoostLock.CreateDynamicReset(1),
                 ClockBoostLock.CreateDynamicReset(4),
                 ClockBoostLock.CreateDynamicReset(5),
-                ClockBoostLock.CreateDynamicReset(1),
             });
         }
 
@@ -162,50 +162,50 @@ namespace NvAPIWrapper.Native.GPU.Structures
             /// <summary>
             ///     Creates a frequency lock entry
             /// </summary>
-            /// <param name="flag">The entry flag.</param>
+            /// <param name="domain">The clock domain.</param>
             /// <param name="frequencyInKhz">The target frequency in kHz.</param>
-            public static ClockBoostLock CreateFrequencyLock(uint flag, uint frequencyInKhz)
+            public static ClockBoostLock CreateFrequencyLock(uint domain, uint frequencyInKhz)
             {
                 var lockEntry = new ClockBoostLock();
-                lockEntry._ClockDomain = 0;
-                lockEntry._Mode = 2;
-                lockEntry._LockMode = ClockLockMode.None;
-                lockEntry._Value = frequencyInKhz;
-                lockEntry._VoltageInMicroV = 0;
-                lockEntry._Flag = flag;
+                lockEntry._ClockDomain = (PublicClockDomain)domain;
+                lockEntry._Mode = 0;
+                lockEntry._LockMode = (ClockLockMode)2;
+                lockEntry._Value = 0;
+                lockEntry._VoltageInMicroV = frequencyInKhz;
+                lockEntry._Flag = 0;
                 return lockEntry;
             }
 
             /// <summary>
             ///     Creates a performance state lock entry
             /// </summary>
-            /// <param name="flag">The entry flag.</param>
+            /// <param name="domain">The clock domain.</param>
             /// <param name="pstateId">The target performance state ID.</param>
-            public static ClockBoostLock CreatePStateLock(uint flag, PerformanceStateId pstateId)
+            public static ClockBoostLock CreatePStateLock(uint domain, PerformanceStateId pstateId)
             {
                 var lockEntry = new ClockBoostLock();
-                lockEntry._ClockDomain = 0;
-                lockEntry._Mode = 1;
-                lockEntry._LockMode = ClockLockMode.None;
-                lockEntry._Value = (uint)pstateId;
-                lockEntry._VoltageInMicroV = 0;
-                lockEntry._Flag = flag;
+                lockEntry._ClockDomain = (PublicClockDomain)domain;
+                lockEntry._Mode = 0;
+                lockEntry._LockMode = (ClockLockMode)1;
+                lockEntry._Value = 0;
+                lockEntry._VoltageInMicroV = (uint)pstateId;
+                lockEntry._Flag = 0;
                 return lockEntry;
             }
 
             /// <summary>
             ///     Creates a reset entry
             /// </summary>
-            /// <param name="flag">The entry flag.</param>
-            public static ClockBoostLock CreateDynamicReset(uint flag)
+            /// <param name="domain">The clock domain.</param>
+            public static ClockBoostLock CreateDynamicReset(uint domain)
             {
                 var lockEntry = new ClockBoostLock();
-                lockEntry._ClockDomain = 0;
+                lockEntry._ClockDomain = (PublicClockDomain)domain;
                 lockEntry._Mode = 0;
-                lockEntry._LockMode = ClockLockMode.None;
+                lockEntry._LockMode = 0;
                 lockEntry._Value = 0;
                 lockEntry._VoltageInMicroV = 0;
-                lockEntry._Flag = flag;
+                lockEntry._Flag = 0;
                 return lockEntry;
             }
         }
