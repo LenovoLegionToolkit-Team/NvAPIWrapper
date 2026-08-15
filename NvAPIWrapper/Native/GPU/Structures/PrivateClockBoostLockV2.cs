@@ -18,9 +18,8 @@ namespace NvAPIWrapper.Native.GPU.Structures
         internal const int MaxNumberOfClocksPerGPU = ClockFrequenciesV1.MaxClocksPerGPU;
 
         internal StructureVersion _Version;
-        internal uint _Unknown1;
+        internal uint _Unknown;
         internal uint _ClockBoostLocksCount;
-        internal uint _Unknown2;
 
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = MaxNumberOfClocksPerGPU)]
         internal ClockBoostLock[] _ClockBoostLocks;
@@ -62,10 +61,10 @@ namespace NvAPIWrapper.Native.GPU.Structures
         {
             return new PrivateClockBoostLockV2(new[]
             {
-                ClockBoostLock.CreateFrequencyLock(PublicClockDomain.Graphics, frequencyInKhz, 1),
-                ClockBoostLock.CreateFrequencyLock(PublicClockDomain.Graphics, frequencyInKhz, 4),
-                ClockBoostLock.CreatePStateLock(PublicClockDomain.Graphics, stateId, 5),
-                ClockBoostLock.CreatePStateLock(PublicClockDomain.Graphics, stateId, 1),
+                ClockBoostLock.CreateFrequencyLock(0, frequencyInKhz),
+                ClockBoostLock.CreateFrequencyLock(1, frequencyInKhz),
+                ClockBoostLock.CreatePStateLock(4, stateId),
+                ClockBoostLock.CreatePStateLock(5, stateId),
             });
         }
 
@@ -76,10 +75,10 @@ namespace NvAPIWrapper.Native.GPU.Structures
         {
             return new PrivateClockBoostLockV2(new[]
             {
-                ClockBoostLock.CreateResetEntry(PublicClockDomain.Graphics, 1),
-                ClockBoostLock.CreateResetEntry(PublicClockDomain.Graphics, 4),
-                ClockBoostLock.CreateResetEntry(PublicClockDomain.Graphics, 5),
-                ClockBoostLock.CreateResetEntry(PublicClockDomain.Graphics, 1),
+                ClockBoostLock.CreateResetEntry(0),
+                ClockBoostLock.CreateResetEntry(1),
+                ClockBoostLock.CreateResetEntry(4),
+                ClockBoostLock.CreateResetEntry(5),
             });
         }
 
@@ -89,19 +88,19 @@ namespace NvAPIWrapper.Native.GPU.Structures
         [StructLayout(LayoutKind.Sequential, Pack = 8)]
         public struct ClockBoostLock
         {
-            internal PublicClockDomain _ClockDomain;
+            internal uint _Flag;
+            internal uint _Unknown1;
             internal uint _Mode;
             internal ClockLockMode _LockMode;
             internal uint _Value;
             internal uint _VoltageInMicroV;
-            internal uint _Flag;
 
             /// <summary>
-            ///     Gets the public clock domain
+            ///     Gets the entry flag
             /// </summary>
-            public PublicClockDomain ClockDomain
+            public uint Flag
             {
-                get => _ClockDomain;
+                get => _Flag;
             }
 
             /// <summary>
@@ -137,11 +136,19 @@ namespace NvAPIWrapper.Native.GPU.Structures
             }
 
             /// <summary>
-            ///     Gets the entry flag
+            ///     Creates a new instance of <see cref="ClockBoostLock" />
             /// </summary>
-            public uint Flag
+            /// <param name="flag">The entry flag.</param>
+            /// <param name="mode">The lock mode.</param>
+            /// <param name="value">The frequency in kHz or performance state ID.</param>
+            public ClockBoostLock(uint flag, uint mode, uint value) : this()
             {
-                get => _Flag;
+                _Flag = flag;
+                _Unknown1 = 0;
+                _Mode = mode;
+                _LockMode = ClockLockMode.None;
+                _Value = value;
+                _VoltageInMicroV = 0;
             }
 
             /// <summary>
@@ -150,57 +157,43 @@ namespace NvAPIWrapper.Native.GPU.Structures
             /// <param name="clockDomain">The public clock domain.</param>
             /// <param name="lockMode">The clock lock mode.</param>
             /// <param name="voltageInMicroV">The locked voltage in uV.</param>
-            public ClockBoostLock(PublicClockDomain clockDomain, ClockLockMode lockMode, uint voltageInMicroV) : this(
-                clockDomain,
-                0,
-                lockMode,
-                0,
-                voltageInMicroV,
-                0)
+            public ClockBoostLock(PublicClockDomain clockDomain, ClockLockMode lockMode, uint voltageInMicroV) : this()
             {
-            }
-
-            /// <summary>
-            ///     Creates a new instance of <see cref="ClockBoostLock" />
-            /// </summary>
-            public ClockBoostLock(
-                PublicClockDomain clockDomain,
-                uint mode,
-                ClockLockMode lockMode,
-                uint value,
-                uint voltageInMicroV,
-                uint flag) : this()
-            {
-                _ClockDomain = clockDomain;
-                _Mode = mode;
+                _Flag = (uint)clockDomain;
+                _Unknown1 = 0;
+                _Mode = 0;
                 _LockMode = lockMode;
-                _Value = value;
+                _Value = 0;
                 _VoltageInMicroV = voltageInMicroV;
-                _Flag = flag;
             }
 
             /// <summary>
             ///     Creates a frequency lock entry
             /// </summary>
-            public static ClockBoostLock CreateFrequencyLock(PublicClockDomain clockDomain, uint frequencyInKhz, uint flag)
+            /// <param name="flag">The entry flag.</param>
+            /// <param name="frequencyInKhz">The target frequency in kHz.</param>
+            public static ClockBoostLock CreateFrequencyLock(uint flag, uint frequencyInKhz)
             {
-                return new ClockBoostLock(clockDomain, 2, ClockLockMode.None, frequencyInKhz, 0, flag);
+                return new ClockBoostLock(flag, 2u, frequencyInKhz);
             }
 
             /// <summary>
             ///     Creates a performance state lock entry
             /// </summary>
-            public static ClockBoostLock CreatePStateLock(PublicClockDomain clockDomain, PerformanceStateId pstateId, uint flag)
+            /// <param name="flag">The entry flag.</param>
+            /// <param name="pstateId">The target performance state ID.</param>
+            public static ClockBoostLock CreatePStateLock(uint flag, PerformanceStateId pstateId)
             {
-                return new ClockBoostLock(clockDomain, 1, ClockLockMode.None, (uint)pstateId, 0, flag);
+                return new ClockBoostLock(flag, 1u, (uint)pstateId);
             }
 
             /// <summary>
             ///     Creates a reset entry
             /// </summary>
-            public static ClockBoostLock CreateResetEntry(PublicClockDomain clockDomain, uint flag)
+            /// <param name="flag">The entry flag.</param>
+            public static ClockBoostLock CreateResetEntry(uint flag)
             {
-                return new ClockBoostLock(clockDomain, 0, ClockLockMode.None, 0, 0, flag);
+                return new ClockBoostLock(flag, 0u, 0u);
             }
         }
     }
