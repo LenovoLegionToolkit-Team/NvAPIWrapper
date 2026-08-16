@@ -286,6 +286,12 @@ namespace NvAPIWrapper.Native.Delegates
             [In] [Accepts(typeof(PrivateVoltageBoostPercentV1))]
             ValueTypeReference voltageBoostPercent);
 
+        [FunctionId(FunctionId.NvAPI_GPU_GetCoprocInfo)]
+        public delegate Status NvAPI_GPU_GetCoprocInfo(
+            [In] PhysicalGPUHandle physicalGpu,
+            [In] [Accepts(typeof(CoprocInfoV8))]
+            ValueTypeReference coprocInfo);
+
         [FunctionId(FunctionId.NvAPI_GPU_GetCurrentAGPRate)]
         public delegate Status NvAPI_GPU_GetCurrentAGPRate(
             [In] PhysicalGPUHandle physicalGpu,
@@ -362,6 +368,12 @@ namespace NvAPIWrapper.Native.Delegates
         public delegate Status NvAPI_GPU_GetFullName(
             [In] PhysicalGPUHandle physicalGpu,
             [Out] out ShortString name);
+
+        [FunctionId(FunctionId.NvAPI_GPU_GetGC6DebugInfo)]
+        public delegate Status NvAPI_GPU_GetGC6DebugInfo(
+            [In] PhysicalGPUHandle physicalGpu,
+            [In] [Accepts(typeof(GC6DebugInfoV2))]
+            ValueTypeReference debugInfo);
 
         [FunctionId(FunctionId.NvAPI_GPU_GetGpuCoreCount)]
         public delegate Status NvAPI_GPU_GetGpuCoreCount(

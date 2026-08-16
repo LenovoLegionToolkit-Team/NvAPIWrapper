@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -259,6 +259,26 @@ namespace NvAPIWrapper.GPU
         ///     Gets the GPU utilization domains and usages
         /// </summary>
         public GPUUsageInformation UsageInformation { get; }
+
+        /// <summary>
+        ///     [PRIVATE]
+        ///     Retrieves the coprocessor / RTD3 power status information for this physical GPU.
+        /// </summary>
+        /// <returns>The coprocessor information structure.</returns>
+        public CoprocInfoV8 GetCoprocInfo()
+        {
+            return GPUApi.GetCoprocInfo(Handle);
+        }
+
+        /// <summary>
+        ///     [PRIVATE]
+        ///     Retrieves GC6 diagnostic and support information for this physical GPU.
+        /// </summary>
+        /// <returns>The GC6 debug info structure.</returns>
+        public GC6DebugInfoV2 GetGC6DebugInfo()
+        {
+            return GPUApi.GetGC6DebugInfo(Handle);
+        }
 
         /// <inheritdoc />
         public bool Equals(PhysicalGPU other)
