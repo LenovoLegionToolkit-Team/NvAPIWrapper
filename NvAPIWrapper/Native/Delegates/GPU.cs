@@ -682,12 +682,6 @@ namespace NvAPIWrapper.Native.Delegates
             [Accepts(typeof(SetIlluminationParameterV1))] [In]
             ValueTypeReference illuminationInfo);
 
-        [FunctionId(FunctionId.NvAPI_GPU_SetPstateLimit)]
-        public delegate Status NvAPI_GPU_SetPstateLimit(
-            [In] PhysicalGPUHandle physicalGpu,
-            [In] [Accepts(typeof(PrivatePStateLimitV1))]
-            ValueTypeReference pstateLimit);
-
         [FunctionId(FunctionId.NvAPI_GPU_SetPstates20)]
         public delegate Status NvAPI_GPU_SetPStates20(
             [In] PhysicalGPUHandle physicalGpu,

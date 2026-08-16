@@ -526,28 +526,6 @@ namespace NvAPIWrapper.Native
 
         /// <summary>
         ///     [PRIVATE]
-        ///     Sets the P-State limit for the passed GPU handle.
-        /// </summary>
-        /// <param name="gpuHandle">The handle of the GPU to perform the operation on.</param>
-        /// <param name="pstateLimit">The new P-State limit configuration.</param>
-        public static void SetPstateLimit(PhysicalGPUHandle gpuHandle, PrivatePStateLimitV1 pstateLimit)
-        {
-            using (var reference = ValueTypeReference.FromValueType(pstateLimit))
-            {
-                var status = DelegateFactory.GetDelegate<Delegates.GPU.NvAPI_GPU_SetPstateLimit>()(
-                    gpuHandle,
-                    reference
-                );
-
-                if (status != Status.Ok)
-                {
-                    throw new NVIDIAApiException(status);
-                }
-            }
-        }
-
-        /// <summary>
-        ///     [PRIVATE]
         ///     Sets the rated TDP control for the passed GPU handle.
         /// </summary>
         /// <param name="gpuHandle">The handle of the GPU to perform the operation on.</param>
