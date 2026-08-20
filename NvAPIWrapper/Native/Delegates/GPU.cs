@@ -289,7 +289,7 @@ namespace NvAPIWrapper.Native.Delegates
         [FunctionId(FunctionId.NvAPI_GPU_GetCoprocInfo)]
         public delegate Status NvAPI_GPU_GetCoprocInfo(
             [In] PhysicalGPUHandle physicalGpu,
-            [In] [Accepts(typeof(CoprocInfoV8))]
+            [In] [Accepts(typeof(CoprocInfoV8), typeof(CoprocInfoV7))]
             ValueTypeReference coprocInfo);
 
         [FunctionId(FunctionId.NvAPI_GPU_GetCurrentAGPRate)]

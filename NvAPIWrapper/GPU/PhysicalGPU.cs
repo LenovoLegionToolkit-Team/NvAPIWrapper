@@ -265,7 +265,7 @@ namespace NvAPIWrapper.GPU
         ///     Retrieves the coprocessor / RTD3 power status information for this physical GPU.
         /// </summary>
         /// <returns>The coprocessor information structure.</returns>
-        public CoprocInfoV8 GetCoprocInfo()
+        public ICoprocInfo GetCoprocInfo()
         {
             return GPUApi.GetCoprocInfo(Handle);
         }

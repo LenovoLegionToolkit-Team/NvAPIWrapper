@@ -5,6 +5,7 @@ using NvAPIWrapper.Native.GPU;
 using NvAPIWrapper.Native.GPU.Structures;
 using NvAPIWrapper.Native.Helpers;
 using NvAPIWrapper.Native.Helpers.Structures;
+using NvAPIWrapper.Native.Interfaces.GPU;
 
 namespace NvAPIWrapper.Native
 {
@@ -16,13 +17,13 @@ namespace NvAPIWrapper.Native
         /// </summary>
         /// <param name="physicalGPUHandle">Handle of the physical GPU.</param>
         /// <returns>The coprocessor information structure.</returns>
-        public static CoprocInfoV8 GetCoprocInfo(PhysicalGPUHandle physicalGPUHandle)
+        public static ICoprocInfo GetCoprocInfo(PhysicalGPUHandle physicalGPUHandle)
         {
             var getCoprocInfo = DelegateFactory.GetDelegate<Delegates.GPU.NvAPI_GPU_GetCoprocInfo>();
 
             foreach (var acceptType in getCoprocInfo.Accepts())
             {
-                var instance = acceptType.Instantiate<CoprocInfoV8>();
+                var instance = acceptType.Instantiate<ICoprocInfo>();
 
                 using (var coprocInfoRef = ValueTypeReference.FromValueType(instance, acceptType))
                 {
@@ -38,7 +39,7 @@ namespace NvAPIWrapper.Native
                         throw new NVIDIAApiException(status);
                     }
 
-                    return coprocInfoRef.ToValueType<CoprocInfoV8>(acceptType);
+                    return coprocInfoRef.ToValueType<ICoprocInfo>(acceptType);
                 }
             }
 

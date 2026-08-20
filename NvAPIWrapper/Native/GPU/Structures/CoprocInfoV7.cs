@@ -9,11 +9,11 @@ namespace NvAPIWrapper.Native.GPU.Structures
 {
     /// <summary>
     ///     [PRIVATE]
-    ///     Holds coprocessor / RTD3 power status information for the GPU (Version 8 - 108 bytes).
+    ///     Holds coprocessor / RTD3 power status information for the GPU (Version 7 - 96 bytes).
     /// </summary>
-    [StructLayout(LayoutKind.Explicit, Size = 108)]
-    [StructureVersion(8)]
-    public struct CoprocInfoV8 : IInitializable, ICoprocInfo
+    [StructLayout(LayoutKind.Explicit, Size = 96)]
+    [StructureVersion(7)]
+    public struct CoprocInfoV7 : IInitializable, ICoprocInfo
     {
         [FieldOffset(0)]
         internal StructureVersion _Version;
@@ -39,7 +39,7 @@ namespace NvAPIWrapper.Native.GPU.Structures
         [FieldOffset(0x38)]
         internal readonly uint _Gc6Flags;
 
-        [FieldOffset(0x3c)]
+        [FieldOffset(0x3C)]
         internal readonly uint _GcOffVersion;
 
         /// <inheritdoc />
