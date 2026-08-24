@@ -6,7 +6,6 @@ using NvAPIWrapper.Native.Helpers;
 
 namespace NvAPIWrapper.Native.Delegates
 {
-    // ReSharper disable InconsistentNaming
     internal static class Pcf
     {
         [FunctionId(FunctionId.NvAPI_PCF_GlobalUnload)]
@@ -17,6 +16,9 @@ namespace NvAPIWrapper.Native.Delegates
 
         [FunctionId(FunctionId.NvAPI_PCF_Mode1Unload)]
         public delegate Status NvAPI_PCF_Mode1Unload(int mode);
+
+        [FunctionId(FunctionId.NvAPI_PCF_GetMasterInfo)]
+        public delegate Status NvAPI_PCF_GetMasterInfo(IntPtr masterInfoBuffer);
 
         [FunctionId(FunctionId.NvAPI_PCF_ControllerGetControl)]
         public delegate Status NvAPI_PCF_ControllerGetControl(IntPtr controllerBuffer);
