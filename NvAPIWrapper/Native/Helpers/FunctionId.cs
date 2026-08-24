@@ -845,6 +845,15 @@ namespace NvAPIWrapper.Native.Helpers
         #endregion
 
         NvAPI_Unload = 0xD7C61344,
-        NvAPI_Initialize = 0x150E828
+        NvAPI_Initialize = 0x150E828,
+
+        // Private PCF (Platform Control Framework) interfaces used by laptop drivers.
+        NvAPI_PCF_GlobalUnload = 0xD22BDD7E,
+        NvAPI_PCF_Mode1Initialize = 0xAD298D3F,
+        NvAPI_PCF_Mode1Unload = 0xD7C61344,
+        NvAPI_PCF_DynamicBoostGetStatus = 0xC80068A1,
+        NvAPI_PCF_DynamicBoostSetStatus = 0x1504FC3D,
+        NvAPI_PCF_ControllerGetControl = 0x93456591,
+        NvAPI_PCF_ControllerSetControl = 0xB78734AB
     }
 }
