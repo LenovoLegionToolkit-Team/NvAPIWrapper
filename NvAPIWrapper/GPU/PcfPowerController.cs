@@ -184,18 +184,17 @@ namespace NvAPIWrapper.GPU
         ///     Retrieves the current Total Processing Power Target offset from baseline in Watts.
         /// </summary>
         /// <returns>The power target offset in Watts (>= 0).</returns>
-        /// <exception cref="InvalidOperationException">The target power target limit is lower than the baseline TGP.</exception>
         /// <exception cref="ObjectDisposedException">The controller instance has been disposed.</exception>
         /// <exception cref="NVIDIAApiException">An error occurred while reading from the NVIDIA driver.</exception>
         public int GetTargetProcessingPowerOffsetInWatts()
         {
             var values = GetPowerValues();
-            var offsetInMilliwatts = (long)values.Field2CInMilliwatts - values.Field30InMilliwatts;
-            if (offsetInMilliwatts < 0)
+            if (values.Field2CInMilliwatts == uint.MaxValue || values.Field2CInMilliwatts <= values.Field30InMilliwatts)
             {
-                throw new InvalidOperationException("PCF Target TPP limit (Field2C) is lower than baseline TGP (Field30).");
+                return 0;
             }
 
+            var offsetInMilliwatts = (long)values.Field2CInMilliwatts - values.Field30InMilliwatts;
             return checked((int)(offsetInMilliwatts / 1000));
         }
 
@@ -211,6 +210,12 @@ namespace NvAPIWrapper.GPU
             if (offsetInWatts < 0)
             {
                 throw new ArgumentOutOfRangeException(nameof(offsetInWatts), "Offset in Watts must be non-negative.");
+            }
+
+            if (offsetInWatts == 0)
+            {
+                ResetTargetProcessingPowerOffset();
+                return;
             }
 
             lock (_sync)
@@ -230,13 +235,25 @@ namespace NvAPIWrapper.GPU
         }
 
         /// <summary>
-        ///     Resets the Total Processing Power Target offset back to 0 Watts (aligning target limit with the baseline TGP).
+        ///     Resets the Total Processing Power Target override, releasing Channel 1 and restoring native dynamic EC thermal scaling.
         /// </summary>
         /// <exception cref="ObjectDisposedException">The controller instance has been disposed.</exception>
         /// <exception cref="NVIDIAApiException">An error occurred while writing to the NVIDIA driver.</exception>
         public void ResetTargetProcessingPowerOffset()
         {
-            SetTargetProcessingPowerOffsetInWatts(0);
+            lock (_sync)
+            {
+                ThrowIfDisposed();
+
+                var values = Decode(PcfApi.GetControllerBuffer(_layout.Version, _layout.Size, ControllerMask));
+                var updatedValues = new PcfPowerValues(
+                    uint.MaxValue,
+                    values.Field30InMilliwatts,
+                    values.Field34InMilliwatts,
+                    values.Field38InMilliwatts);
+
+                SetPowerValues(PcfPowerFields.Field2C, updatedValues);
+            }
         }
 
         /// <summary>
