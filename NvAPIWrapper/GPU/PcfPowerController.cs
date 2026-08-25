@@ -11,11 +11,13 @@ namespace NvAPIWrapper.GPU
     {
         private sealed class ControllerLayout
         {
-            public ControllerLayout(PcfPowerLayout type, uint version, int size, int field2COffset, int field30Offset, int field34Offset, int field38Offset)
+            public ControllerLayout(PcfPowerLayout type, uint version, int size, int stride, int flagOffset, int field2COffset, int field30Offset, int field34Offset, int field38Offset)
             {
                 Type = type;
                 Version = version;
                 Size = size;
+                Stride = stride;
+                FlagOffset = flagOffset;
                 Field2COffset = field2COffset;
                 Field30Offset = field30Offset;
                 Field34Offset = field34Offset;
@@ -25,6 +27,8 @@ namespace NvAPIWrapper.GPU
             public PcfPowerLayout Type { get; }
             public uint Version { get; }
             public int Size { get; }
+            public int Stride { get; }
+            public int FlagOffset { get; }
             public int Field2COffset { get; }
             public int Field30Offset { get; }
             public int Field34Offset { get; }
@@ -33,8 +37,8 @@ namespace NvAPIWrapper.GPU
 
         private static readonly ControllerLayout[] KnownLayouts =
         {
-            new ControllerLayout(PcfPowerLayout.V1, 0x00010C88, 0xC88, 0x2C, 0x30, 0x34, 0x38),
-            new ControllerLayout(PcfPowerLayout.V2, 0x00021640, 0x1640, 0x48, 0x4C, 0x50, 0x54)
+            new ControllerLayout(PcfPowerLayout.V1, 0x00010C88, 0xC88, 100, 0x08, 0x2C, 0x30, 0x34, 0x38),
+            new ControllerLayout(PcfPowerLayout.V2, 0x00021640, 0x1640, 176, 0x40, 0x4C, 0x50, 0x54, 0x58)
         };
 
         private readonly object _sync = new object();
@@ -155,25 +159,31 @@ namespace NvAPIWrapper.GPU
             {
                 ThrowIfDisposed();
 
-                var buffer = PcfApi.GetControllerBuffer(_layout.Version, _layout.Size, ControllerMask);
+                var buffer = new byte[_layout.Size];
+                SetUInt32(buffer, 0, ControllerMask);
+                SetUInt32(buffer, 4, _layout.Version);
+
+                var controllerOffset = (int)(ControllerIndex * _layout.Stride);
+                buffer[_layout.FlagOffset + controllerOffset] = 1;
+
                 if ((fields & PcfPowerFields.Field2C) != 0)
                 {
-                    SetUInt32(buffer, _layout.Field2COffset, values.Field2CInMilliwatts);
+                    SetUInt32(buffer, _layout.Field2COffset + controllerOffset, values.Field2CInMilliwatts);
                 }
 
                 if ((fields & PcfPowerFields.Field30) != 0)
                 {
-                    SetUInt32(buffer, _layout.Field30Offset, values.Field30InMilliwatts);
+                    SetUInt32(buffer, _layout.Field30Offset + controllerOffset, values.Field30InMilliwatts);
                 }
 
                 if ((fields & PcfPowerFields.Field34) != 0)
                 {
-                    SetUInt32(buffer, _layout.Field34Offset, values.Field34InMilliwatts);
+                    SetUInt32(buffer, _layout.Field34Offset + controllerOffset, values.Field34InMilliwatts);
                 }
 
                 if ((fields & PcfPowerFields.Field38) != 0)
                 {
-                    SetUInt32(buffer, _layout.Field38Offset, values.Field38InMilliwatts);
+                    SetUInt32(buffer, _layout.Field38Offset + controllerOffset, values.Field38InMilliwatts);
                 }
 
                 PcfApi.SetControllerBuffer(buffer);
@@ -245,14 +255,13 @@ namespace NvAPIWrapper.GPU
             {
                 ThrowIfDisposed();
 
-                var values = Decode(PcfApi.GetControllerBuffer(_layout.Version, _layout.Size, ControllerMask));
                 var updatedValues = new PcfPowerValues(
                     uint.MaxValue,
-                    values.Field30InMilliwatts,
-                    values.Field34InMilliwatts,
-                    values.Field38InMilliwatts);
+                    uint.MaxValue,
+                    uint.MaxValue,
+                    0);
 
-                SetPowerValues(PcfPowerFields.Field2C, updatedValues);
+                SetPowerValues(PcfPowerFields.Field2C | PcfPowerFields.Field30 | PcfPowerFields.Field34, updatedValues);
             }
         }
 
@@ -319,11 +328,12 @@ namespace NvAPIWrapper.GPU
 
         private PcfPowerValues Decode(byte[] buffer)
         {
+            var controllerOffset = (int)(ControllerIndex * _layout.Stride);
             return new PcfPowerValues(
-                BitConverter.ToUInt32(buffer, _layout.Field2COffset),
-                BitConverter.ToUInt32(buffer, _layout.Field30Offset),
-                BitConverter.ToUInt32(buffer, _layout.Field34Offset),
-                BitConverter.ToUInt32(buffer, _layout.Field38Offset));
+                BitConverter.ToUInt32(buffer, _layout.Field2COffset + controllerOffset),
+                BitConverter.ToUInt32(buffer, _layout.Field30Offset + controllerOffset),
+                BitConverter.ToUInt32(buffer, _layout.Field34Offset + controllerOffset),
+                BitConverter.ToUInt32(buffer, _layout.Field38Offset + controllerOffset));
         }
 
         private static void SetUInt32(byte[] buffer, int offset, uint value)
