@@ -181,6 +181,65 @@ namespace NvAPIWrapper.GPU
         }
 
         /// <summary>
+        ///     Retrieves the current Total Processing Power Target offset from baseline in Watts.
+        /// </summary>
+        /// <returns>The power target offset in Watts (>= 0).</returns>
+        /// <exception cref="InvalidOperationException">The target power target limit is lower than the baseline TGP.</exception>
+        /// <exception cref="ObjectDisposedException">The controller instance has been disposed.</exception>
+        /// <exception cref="NVIDIAApiException">An error occurred while reading from the NVIDIA driver.</exception>
+        public int GetTargetProcessingPowerOffsetInWatts()
+        {
+            var values = GetPowerValues();
+            var offsetInMilliwatts = (long)values.Field2CInMilliwatts - values.Field30InMilliwatts;
+            if (offsetInMilliwatts < 0)
+            {
+                throw new InvalidOperationException("PCF Target TPP limit (Field2C) is lower than baseline TGP (Field30).");
+            }
+
+            return checked((int)(offsetInMilliwatts / 1000));
+        }
+
+        /// <summary>
+        ///     Updates the Total Processing Power Target offset from baseline in Watts.
+        /// </summary>
+        /// <param name="offsetInWatts">The offset in Watts to add to the baseline TGP (must be non-negative).</param>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="offsetInWatts"/> is negative.</exception>
+        /// <exception cref="ObjectDisposedException">The controller instance has been disposed.</exception>
+        /// <exception cref="NVIDIAApiException">An error occurred while writing to the NVIDIA driver.</exception>
+        public void SetTargetProcessingPowerOffsetInWatts(int offsetInWatts)
+        {
+            if (offsetInWatts < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(offsetInWatts), "Offset in Watts must be non-negative.");
+            }
+
+            lock (_sync)
+            {
+                ThrowIfDisposed();
+
+                var values = Decode(PcfApi.GetControllerBuffer(_layout.Version, _layout.Size, ControllerMask));
+                var field2CInMilliwatts = checked((uint)((long)values.Field30InMilliwatts + (long)offsetInWatts * 1000L));
+                var updatedValues = new PcfPowerValues(
+                    field2CInMilliwatts,
+                    values.Field30InMilliwatts,
+                    values.Field34InMilliwatts,
+                    values.Field38InMilliwatts);
+
+                SetPowerValues(PcfPowerFields.Field2C, updatedValues);
+            }
+        }
+
+        /// <summary>
+        ///     Resets the Total Processing Power Target offset back to 0 Watts (aligning target limit with the baseline TGP).
+        /// </summary>
+        /// <exception cref="ObjectDisposedException">The controller instance has been disposed.</exception>
+        /// <exception cref="NVIDIAApiException">An error occurred while writing to the NVIDIA driver.</exception>
+        public void ResetTargetProcessingPowerOffset()
+        {
+            SetTargetProcessingPowerOffsetInWatts(0);
+        }
+
+        /// <summary>
         ///     Gets a value indicating whether Dynamic Boost is currently enabled.
         /// </summary>
         /// <returns><c>true</c> if Dynamic Boost is enabled; otherwise, <c>false</c>.</returns>
