@@ -8,36 +8,36 @@ namespace NvAPIWrapper.GPU
         /// <summary>
         ///     Initializes a new instance of the <see cref="PcfPowerValues"/> class.
         /// </summary>
-        /// <param name="field2CInMilliwatts">The value of Field2C in milliwatts.</param>
-        /// <param name="field30InMilliwatts">The value of Field30 in milliwatts.</param>
-        /// <param name="field34InMilliwatts">The value of Field34 in milliwatts.</param>
-        /// <param name="field38InMilliwatts">The value of Field38 in milliwatts.</param>
-        public PcfPowerValues(uint field2CInMilliwatts, uint field30InMilliwatts, uint field34InMilliwatts, uint field38InMilliwatts)
+        /// <param name="acTargetTPPLimit">The value of AC Target TPP Limit in milliwatts.</param>
+        /// <param name="acDefaultGPULimit">The value of AC Default GPU Limit in milliwatts.</param>
+        /// <param name="acMinGPULimit">The value of AC Min GPU Limit in milliwatts.</param>
+        /// <param name="acMaxGPULimit">The value of AC Max GPU Limit in milliwatts.</param>
+        public PcfPowerValues(uint acTargetTPPLimit, uint acDefaultGPULimit, uint acMinGPULimit, uint acMaxGPULimit)
         {
-            Field2CInMilliwatts = field2CInMilliwatts;
-            Field30InMilliwatts = field30InMilliwatts;
-            Field34InMilliwatts = field34InMilliwatts;
-            Field38InMilliwatts = field38InMilliwatts;
+            ACTargetTPPLimitInMilliwatts = acTargetTPPLimit;
+            ACDefaultGPULimitInMilliwatts = acDefaultGPULimit;
+            ACMinGPULimitInMilliwatts = acMinGPULimit;
+            ACMaxGPULimitInMilliwatts = acMaxGPULimit;
         }
 
         /// <summary>
-        ///     Gets the Field2C power limit value in milliwatts (Primary GPU total processing power target).
+        ///     Gets the AC Target TPP Limit value in milliwatts.
         /// </summary>
-        public uint Field2CInMilliwatts { get; }
+        public uint ACTargetTPPLimitInMilliwatts { get; }
 
         /// <summary>
-        ///     Gets the Field30 power limit value in milliwatts (Baseline GPU power target).
+        ///     Gets the AC Default GPU Limit value in milliwatts.
         /// </summary>
-        public uint Field30InMilliwatts { get; }
+        public uint ACDefaultGPULimitInMilliwatts { get; }
 
         /// <summary>
-        ///     Gets the Field34 power limit value in milliwatts (Secondary power limit).
+        ///     Gets the AC Min GPU Limit value in milliwatts.
         /// </summary>
-        public uint Field34InMilliwatts { get; }
+        public uint ACMinGPULimitInMilliwatts { get; }
 
         /// <summary>
-        ///     Gets the Field38 power limit value in milliwatts (Auxiliary power limit).
+        ///     Gets the AC Max GPU Limit value in milliwatts.
         /// </summary>
-        public uint Field38InMilliwatts { get; }
+        public uint ACMaxGPULimitInMilliwatts { get; }
     }
 }

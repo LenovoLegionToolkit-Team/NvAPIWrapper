@@ -11,17 +11,17 @@ namespace NvAPIWrapper.GPU
     {
         private sealed class ControllerLayout
         {
-            public ControllerLayout(PcfPowerLayout type, uint version, int size, int stride, int flagOffset, int field2COffset, int field30Offset, int field34Offset, int field38Offset)
+            public ControllerLayout(PcfPowerLayout type, uint version, int size, int stride, int flagOffset, int acTargetTppLimit, int acDefaultGpuLimit, int acMinGpuLimit, int acMaxGpuLimit)
             {
                 Type = type;
                 Version = version;
                 Size = size;
                 Stride = stride;
                 FlagOffset = flagOffset;
-                Field2COffset = field2COffset;
-                Field30Offset = field30Offset;
-                Field34Offset = field34Offset;
-                Field38Offset = field38Offset;
+                ACTargetTPPLimit = acTargetTppLimit;
+                ACDefaultGPULimit = acDefaultGpuLimit;
+                ACMinGPULimit = acMinGpuLimit;
+                ACMaxGPULimit = acMaxGpuLimit;
             }
 
             public PcfPowerLayout Type { get; }
@@ -29,10 +29,10 @@ namespace NvAPIWrapper.GPU
             public int Size { get; }
             public int Stride { get; }
             public int FlagOffset { get; }
-            public int Field2COffset { get; }
-            public int Field30Offset { get; }
-            public int Field34Offset { get; }
-            public int Field38Offset { get; }
+            public int ACTargetTPPLimit { get; }
+            public int ACDefaultGPULimit { get; }
+            public int ACMinGPULimit { get; }
+            public int ACMaxGPULimit { get; }
         }
 
         private static readonly ControllerLayout[] KnownLayouts =
@@ -166,24 +166,24 @@ namespace NvAPIWrapper.GPU
                 var controllerOffset = (int)(ControllerIndex * _layout.Stride);
                 buffer[_layout.FlagOffset + controllerOffset] = 1;
 
-                if ((fields & PcfPowerFields.Field2C) != 0)
+                if ((fields & PcfPowerFields.ACTargetTPPLimit) != 0)
                 {
-                    SetUInt32(buffer, _layout.Field2COffset + controllerOffset, values.Field2CInMilliwatts);
+                    SetUInt32(buffer, _layout.ACTargetTPPLimit + controllerOffset, values.ACTargetTPPLimitInMilliwatts);
                 }
 
-                if ((fields & PcfPowerFields.Field30) != 0)
+                if ((fields & PcfPowerFields.ACDefaultGPULimit) != 0)
                 {
-                    SetUInt32(buffer, _layout.Field30Offset + controllerOffset, values.Field30InMilliwatts);
+                    SetUInt32(buffer, _layout.ACDefaultGPULimit + controllerOffset, values.ACDefaultGPULimitInMilliwatts);
                 }
 
-                if ((fields & PcfPowerFields.Field34) != 0)
+                if ((fields & PcfPowerFields.ACMinGPULimit) != 0)
                 {
-                    SetUInt32(buffer, _layout.Field34Offset + controllerOffset, values.Field34InMilliwatts);
+                    SetUInt32(buffer, _layout.ACMinGPULimit + controllerOffset, values.ACMinGPULimitInMilliwatts);
                 }
 
-                if ((fields & PcfPowerFields.Field38) != 0)
+                if ((fields & PcfPowerFields.ACMaxGPULimit) != 0)
                 {
-                    SetUInt32(buffer, _layout.Field38Offset + controllerOffset, values.Field38InMilliwatts);
+                    SetUInt32(buffer, _layout.ACMaxGPULimit + controllerOffset, values.ACMaxGPULimitInMilliwatts);
                 }
 
                 PcfApi.SetControllerBuffer(buffer);
@@ -199,12 +199,12 @@ namespace NvAPIWrapper.GPU
         public int GetTargetProcessingPowerOffsetInWatts()
         {
             var values = GetPowerValues();
-            if (values.Field2CInMilliwatts == uint.MaxValue || values.Field2CInMilliwatts <= values.Field30InMilliwatts)
+            if (values.ACTargetTPPLimitInMilliwatts == uint.MaxValue || values.ACTargetTPPLimitInMilliwatts <= values.ACDefaultGPULimitInMilliwatts)
             {
                 return 0;
             }
 
-            var offsetInMilliwatts = (long)values.Field2CInMilliwatts - values.Field30InMilliwatts;
+            var offsetInMilliwatts = (long)values.ACTargetTPPLimitInMilliwatts - values.ACDefaultGPULimitInMilliwatts;
             return checked((int)(offsetInMilliwatts / 1000));
         }
 
@@ -233,14 +233,14 @@ namespace NvAPIWrapper.GPU
                 ThrowIfDisposed();
 
                 var values = Decode(PcfApi.GetControllerBuffer(_layout.Version, _layout.Size, ControllerMask));
-                var field2CInMilliwatts = checked((uint)((long)values.Field30InMilliwatts + (long)offsetInWatts * 1000L));
+                var acTargetTppLimitInMilliwatts = checked((uint)((long)values.ACDefaultGPULimitInMilliwatts + (long)offsetInWatts * 1000L));
                 var updatedValues = new PcfPowerValues(
-                    field2CInMilliwatts,
-                    values.Field30InMilliwatts,
-                    values.Field34InMilliwatts,
-                    values.Field38InMilliwatts);
+                    acTargetTppLimitInMilliwatts,
+                    values.ACDefaultGPULimitInMilliwatts,
+                    values.ACMinGPULimitInMilliwatts,
+                    values.ACMaxGPULimitInMilliwatts);
 
-                SetPowerValues(PcfPowerFields.Field2C, updatedValues);
+                SetPowerValues(PcfPowerFields.ACTargetTPPLimit, updatedValues);
             }
         }
 
@@ -255,13 +255,36 @@ namespace NvAPIWrapper.GPU
             {
                 ThrowIfDisposed();
 
+                var values = Decode(PcfApi.GetControllerBuffer(_layout.Version, _layout.Size, ControllerMask));
+                var updatedValues = new PcfPowerValues(
+                    uint.MaxValue,
+                    values.ACDefaultGPULimitInMilliwatts,
+                    values.ACMinGPULimitInMilliwatts,
+                    values.ACMaxGPULimitInMilliwatts);
+
+                SetPowerValues(PcfPowerFields.ACTargetTPPLimit, updatedValues);
+            }
+        }
+
+        /// <summary>
+        ///     Resets all overrides, releasing Channel 1 and restoring native dynamic EC thermal scaling.
+        /// </summary>
+        /// <exception cref="ObjectDisposedException">The controller instance has been disposed.</exception>
+        /// <exception cref="NVIDIAApiException">An error occurred while writing to the NVIDIA driver.</exception>
+        public void ResetAllOverrides()
+        {
+            lock (_sync)
+            {
+                ThrowIfDisposed();
+
+                var values = Decode(PcfApi.GetControllerBuffer(_layout.Version, _layout.Size, ControllerMask));
                 var updatedValues = new PcfPowerValues(
                     uint.MaxValue,
                     uint.MaxValue,
                     uint.MaxValue,
-                    0);
+                    uint.MaxValue);
 
-                SetPowerValues(PcfPowerFields.Field2C | PcfPowerFields.Field30 | PcfPowerFields.Field34, updatedValues);
+                SetPowerValues(PcfPowerFields.All, updatedValues);
             }
         }
 
@@ -330,10 +353,10 @@ namespace NvAPIWrapper.GPU
         {
             var controllerOffset = (int)(ControllerIndex * _layout.Stride);
             return new PcfPowerValues(
-                BitConverter.ToUInt32(buffer, _layout.Field2COffset + controllerOffset),
-                BitConverter.ToUInt32(buffer, _layout.Field30Offset + controllerOffset),
-                BitConverter.ToUInt32(buffer, _layout.Field34Offset + controllerOffset),
-                BitConverter.ToUInt32(buffer, _layout.Field38Offset + controllerOffset));
+                BitConverter.ToUInt32(buffer, _layout.ACTargetTPPLimit + controllerOffset),
+                BitConverter.ToUInt32(buffer, _layout.ACDefaultGPULimit + controllerOffset),
+                BitConverter.ToUInt32(buffer, _layout.ACMinGPULimit + controllerOffset),
+                BitConverter.ToUInt32(buffer, _layout.ACMaxGPULimit + controllerOffset));
         }
 
         private static void SetUInt32(byte[] buffer, int offset, uint value)
