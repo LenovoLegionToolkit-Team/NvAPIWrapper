@@ -135,62 +135,6 @@ namespace NvAPIWrapper.GPU
         }
 
         /// <summary>
-        ///     Updates specified power limit fields in the PCF controller buffer.
-        /// </summary>
-        /// <param name="fields">The fields to update.</param>
-        /// <param name="values">The power limit values to apply.</param>
-        /// <exception cref="ArgumentOutOfRangeException">No fields were specified.</exception>
-        /// <exception cref="ArgumentNullException"><paramref name="values"/> is null.</exception>
-        /// <exception cref="ObjectDisposedException">The controller instance has been disposed.</exception>
-        /// <exception cref="NVIDIAApiException">An error occurred while writing to the NVIDIA driver.</exception>
-        public void SetPowerValues(PcfPowerFields fields, PcfPowerValues values)
-        {
-            if (fields == PcfPowerFields.None)
-            {
-                throw new ArgumentOutOfRangeException(nameof(fields));
-            }
-
-            if (values == null)
-            {
-                throw new ArgumentNullException(nameof(values));
-            }
-
-            lock (_sync)
-            {
-                ThrowIfDisposed();
-
-                var buffer = new byte[_layout.Size];
-                SetUInt32(buffer, 0, ControllerMask);
-                SetUInt32(buffer, 4, _layout.Version);
-
-                var controllerOffset = (int)(ControllerIndex * _layout.Stride);
-                buffer[_layout.FlagOffset + controllerOffset] = 1;
-
-                if ((fields & PcfPowerFields.ACTargetTPPLimit) != 0)
-                {
-                    SetUInt32(buffer, _layout.ACTargetTPPLimit + controllerOffset, values.ACTargetTPPLimitInMilliwatts);
-                }
-
-                if ((fields & PcfPowerFields.ACDefaultGPULimit) != 0)
-                {
-                    SetUInt32(buffer, _layout.ACDefaultGPULimit + controllerOffset, values.ACDefaultGPULimitInMilliwatts);
-                }
-
-                if ((fields & PcfPowerFields.ACMinGPULimit) != 0)
-                {
-                    SetUInt32(buffer, _layout.ACMinGPULimit + controllerOffset, values.ACMinGPULimitInMilliwatts);
-                }
-
-                if ((fields & PcfPowerFields.ACMaxGPULimit) != 0)
-                {
-                    SetUInt32(buffer, _layout.ACMaxGPULimit + controllerOffset, values.ACMaxGPULimitInMilliwatts);
-                }
-
-                PcfApi.SetControllerBuffer(buffer);
-            }
-        }
-
-        /// <summary>
         ///     Retrieves the current Total Processing Power Target offset from baseline in Watts.
         /// </summary>
         /// <returns>The power target offset in Watts (>= 0).</returns>
@@ -206,6 +150,26 @@ namespace NvAPIWrapper.GPU
 
             var offsetInMilliwatts = (long)values.ACTargetTPPLimitInMilliwatts - values.ACDefaultGPULimitInMilliwatts;
             return checked((int)(offsetInMilliwatts / 1000));
+        }
+
+        /// <summary>
+        ///     Updates one power limit field in the PCF controller buffer.
+        /// </summary>
+        /// <param name="field">The field to update.</param>
+        /// <param name="value">The power limit value to apply in Watts.</param>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="field"/> does not specify exactly one field, or <paramref name="value"/> is zero.</exception>
+        /// <exception cref="ObjectDisposedException">The controller instance has been disposed.</exception>
+        /// <exception cref="NVIDIAApiException">An error occurred while writing to the NVIDIA driver.</exception>
+        public void SetPowerFieldInWatts(PcfPowerFields field, ushort value)
+        {
+            if (field == PcfPowerFields.None)
+                throw new ArgumentOutOfRangeException(nameof(field));
+
+            if (value == 0)
+                throw new ArgumentOutOfRangeException(nameof(value), "Power limit must be positive.");
+
+            var milliwatts = checked((uint)value * 1000);
+            SetPowerValues(field, GetPowerValues().With(field, milliwatts));
         }
 
         /// <summary>
@@ -232,7 +196,7 @@ namespace NvAPIWrapper.GPU
             {
                 ThrowIfDisposed();
 
-                var values = Decode(PcfApi.GetControllerBuffer(_layout.Version, _layout.Size, ControllerMask));
+                var values = GetPowerValues();
                 var acTargetTppLimitInMilliwatts = checked((uint)((long)values.ACDefaultGPULimitInMilliwatts + (long)offsetInWatts * 1000L));
                 var updatedValues = new PcfPowerValues(
                     acTargetTppLimitInMilliwatts,
@@ -255,7 +219,7 @@ namespace NvAPIWrapper.GPU
             {
                 ThrowIfDisposed();
 
-                var values = Decode(PcfApi.GetControllerBuffer(_layout.Version, _layout.Size, ControllerMask));
+                var values = GetPowerValues();
                 var updatedValues = new PcfPowerValues(
                     uint.MaxValue,
                     values.ACDefaultGPULimitInMilliwatts,
@@ -263,6 +227,24 @@ namespace NvAPIWrapper.GPU
                     values.ACMaxGPULimitInMilliwatts);
 
                 SetPowerValues(PcfPowerFields.ACTargetTPPLimit, updatedValues);
+            }
+        }
+
+        /// <summary>
+        ///     Resets one PCF power limit override by writing the driver's release value.
+        /// </summary>
+        /// <param name="field">Exactly one power limit field to reset.</param>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="field"/> does not specify exactly one field.</exception>
+        /// <exception cref="ObjectDisposedException">The controller instance has been disposed.</exception>
+        /// <exception cref="NVIDIAApiException">An error occurred while writing to the NVIDIA driver.</exception>
+        public void ResetPowerField(PcfPowerFields field)
+        {
+            lock (_sync)
+            {
+                ThrowIfDisposed();
+
+                var values = GetPowerValues();
+                SetPowerValues(field, values.With(field, uint.MaxValue));
             }
         }
 
@@ -277,7 +259,7 @@ namespace NvAPIWrapper.GPU
             {
                 ThrowIfDisposed();
 
-                var values = Decode(PcfApi.GetControllerBuffer(_layout.Version, _layout.Size, ControllerMask));
+                var values = GetPowerValues();
                 var updatedValues = new PcfPowerValues(
                     uint.MaxValue,
                     uint.MaxValue,
@@ -346,6 +328,62 @@ namespace NvAPIWrapper.GPU
 
                 _disposed = true;
                 TryUnload();
+            }
+        }
+
+        /// <summary>
+        ///     Updates specified power limit fields in the PCF controller buffer.
+        /// </summary>
+        /// <param name="fields">The fields to update.</param>
+        /// <param name="values">The power limit values to apply.</param>
+        /// <exception cref="ArgumentOutOfRangeException">No fields were specified.</exception>
+        /// <exception cref="ArgumentNullException"><paramref name="values"/> is null.</exception>
+        /// <exception cref="ObjectDisposedException">The controller instance has been disposed.</exception>
+        /// <exception cref="NVIDIAApiException">An error occurred while writing to the NVIDIA driver.</exception>
+        private void SetPowerValues(PcfPowerFields fields, PcfPowerValues values)
+        {
+            if (fields == PcfPowerFields.None)
+            {
+                throw new ArgumentOutOfRangeException(nameof(fields));
+            }
+
+            if (values == null)
+            {
+                throw new ArgumentNullException(nameof(values));
+            }
+
+            lock (_sync)
+            {
+                ThrowIfDisposed();
+
+                var buffer = new byte[_layout.Size];
+                SetUInt32(buffer, 0, ControllerMask);
+                SetUInt32(buffer, 4, _layout.Version);
+
+                var controllerOffset = (int)(ControllerIndex * _layout.Stride);
+                buffer[_layout.FlagOffset + controllerOffset] = 1;
+
+                if ((fields & PcfPowerFields.ACTargetTPPLimit) != 0)
+                {
+                    SetUInt32(buffer, _layout.ACTargetTPPLimit + controllerOffset, values.ACTargetTPPLimitInMilliwatts);
+                }
+
+                if ((fields & PcfPowerFields.ACDefaultGPULimit) != 0)
+                {
+                    SetUInt32(buffer, _layout.ACDefaultGPULimit + controllerOffset, values.ACDefaultGPULimitInMilliwatts);
+                }
+
+                if ((fields & PcfPowerFields.ACMinGPULimit) != 0)
+                {
+                    SetUInt32(buffer, _layout.ACMinGPULimit + controllerOffset, values.ACMinGPULimitInMilliwatts);
+                }
+
+                if ((fields & PcfPowerFields.ACMaxGPULimit) != 0)
+                {
+                    SetUInt32(buffer, _layout.ACMaxGPULimit + controllerOffset, values.ACMaxGPULimitInMilliwatts);
+                }
+
+                PcfApi.SetControllerBuffer(buffer);
             }
         }
 
