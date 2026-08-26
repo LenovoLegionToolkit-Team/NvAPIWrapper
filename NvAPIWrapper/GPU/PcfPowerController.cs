@@ -173,6 +173,30 @@ namespace NvAPIWrapper.GPU
         }
 
         /// <summary>
+        ///     Updates all PCF power limit fields in Watts.
+        /// </summary>
+        /// <param name="acTargetTppLimitInWatts">The AC target TPP limit in Watts.</param>
+        /// <param name="acDefaultGpuLimitInWatts">The AC default GPU limit in Watts.</param>
+        /// <param name="acMinGpuLimitInWatts">The AC minimum GPU limit in Watts.</param>
+        /// <param name="acMaxGpuLimitInWatts">The AC maximum GPU limit in Watts.</param>
+        /// <exception cref="ObjectDisposedException">The controller instance has been disposed.</exception>
+        /// <exception cref="NVIDIAApiException">An error occurred while writing to the NVIDIA driver.</exception>
+        public void SetPowerLimitsInWatts(
+            ushort acTargetTppLimitInWatts,
+            ushort acDefaultGpuLimitInWatts,
+            ushort acMinGpuLimitInWatts,
+            ushort acMaxGpuLimitInWatts)
+        {
+            var values = new PcfPowerValues(
+                (uint)acTargetTppLimitInWatts * 1000,
+                (uint)acDefaultGpuLimitInWatts * 1000,
+                (uint)acMinGpuLimitInWatts * 1000,
+                (uint)acMaxGpuLimitInWatts * 1000);
+
+            SetPowerValues(PcfPowerFields.All, values);
+        }
+
+        /// <summary>
         ///     Updates the Total Processing Power Target offset from baseline in Watts.
         /// </summary>
         /// <param name="offsetInWatts">The positive offset in Watts to add to the baseline TGP.</param>
