@@ -135,117 +135,31 @@ namespace NvAPIWrapper.GPU
         }
 
         /// <summary>
-        ///     Retrieves the current Total Processing Power Target offset from baseline in Watts.
-        /// </summary>
-        /// <returns>The power target offset in Watts (>= 0).</returns>
-        /// <exception cref="ObjectDisposedException">The controller instance has been disposed.</exception>
-        /// <exception cref="NVIDIAApiException">An error occurred while reading from the NVIDIA driver.</exception>
-        public int GetTargetProcessingPowerOffsetInWatts()
-        {
-            var values = GetPowerValues();
-            if (values.ACTargetTPPLimitInMilliwatts == uint.MaxValue || values.ACTargetTPPLimitInMilliwatts <= values.ACDefaultGPULimitInMilliwatts)
-            {
-                return 0;
-            }
-
-            var offsetInMilliwatts = (long)values.ACTargetTPPLimitInMilliwatts - values.ACDefaultGPULimitInMilliwatts;
-            return checked((int)(offsetInMilliwatts / 1000));
-        }
-
-        /// <summary>
-        ///     Updates one power limit field in the PCF controller buffer.
+        ///     Updates one power limit field in the PCF controller buffer in milliwatts.
         /// </summary>
         /// <param name="field">The field to update.</param>
-        /// <param name="value">The power limit value to apply in Watts.</param>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="field"/> does not specify exactly one field, or <paramref name="value"/> is zero.</exception>
+        /// <param name="milliwatts">The power limit value to apply in milliwatts.</param>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="field"/> does not specify exactly one field.</exception>
         /// <exception cref="ObjectDisposedException">The controller instance has been disposed.</exception>
         /// <exception cref="NVIDIAApiException">An error occurred while writing to the NVIDIA driver.</exception>
-        public void SetPowerFieldInWatts(PcfPowerFields field, ushort value)
+        public void SetPowerField(PcfPowerFields field, uint milliwatts)
         {
             if (field == PcfPowerFields.None)
                 throw new ArgumentOutOfRangeException(nameof(field));
 
-            if (value == 0)
-                throw new ArgumentOutOfRangeException(nameof(value), "Power limit must be positive.");
-
-            var milliwatts = checked((uint)value * 1000);
             SetPowerValues(field, GetPowerValues().With(field, milliwatts));
         }
 
         /// <summary>
-        ///     Updates all PCF power limit fields in Watts.
+        ///     Updates all PCF power limit fields in milliwatts.
         /// </summary>
-        /// <param name="acTargetTppLimitInWatts">The AC target TPP limit in Watts.</param>
-        /// <param name="acDefaultGpuLimitInWatts">The AC default GPU limit in Watts.</param>
-        /// <param name="acMinGpuLimitInWatts">The AC minimum GPU limit in Watts.</param>
-        /// <param name="acMaxGpuLimitInWatts">The AC maximum GPU limit in Watts.</param>
+        /// <param name="values">The power limit values to apply in milliwatts.</param>
+        /// <exception cref="ArgumentNullException"><paramref name="values"/> is null.</exception>
         /// <exception cref="ObjectDisposedException">The controller instance has been disposed.</exception>
         /// <exception cref="NVIDIAApiException">An error occurred while writing to the NVIDIA driver.</exception>
-        public void SetPowerLimitsInWatts(
-            ushort acTargetTppLimitInWatts,
-            ushort acDefaultGpuLimitInWatts,
-            ushort acMinGpuLimitInWatts,
-            ushort acMaxGpuLimitInWatts)
+        public void SetPowerLimits(PcfPowerValues values)
         {
-            var values = new PcfPowerValues(
-                (uint)acTargetTppLimitInWatts * 1000,
-                (uint)acDefaultGpuLimitInWatts * 1000,
-                (uint)acMinGpuLimitInWatts * 1000,
-                (uint)acMaxGpuLimitInWatts * 1000);
-
             SetPowerValues(PcfPowerFields.All, values);
-        }
-
-        /// <summary>
-        ///     Updates the Total Processing Power Target offset from baseline in Watts.
-        /// </summary>
-        /// <param name="offsetInWatts">The positive offset in Watts to add to the baseline TGP.</param>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="offsetInWatts"/> is zero or negative.</exception>
-        /// <exception cref="ObjectDisposedException">The controller instance has been disposed.</exception>
-        /// <exception cref="NVIDIAApiException">An error occurred while writing to the NVIDIA driver.</exception>
-        public void SetTargetProcessingPowerOffsetInWatts(int offsetInWatts)
-        {
-            if (offsetInWatts <= 0)
-            {
-                throw new ArgumentOutOfRangeException(nameof(offsetInWatts), "Offset in Watts must be positive.");
-            }
-
-            lock (_sync)
-            {
-                ThrowIfDisposed();
-
-                var values = GetPowerValues();
-                var acTargetTppLimitInMilliwatts = checked((uint)((long)values.ACDefaultGPULimitInMilliwatts + (long)offsetInWatts * 1000L));
-                var updatedValues = new PcfPowerValues(
-                    acTargetTppLimitInMilliwatts,
-                    values.ACDefaultGPULimitInMilliwatts,
-                    values.ACMinGPULimitInMilliwatts,
-                    values.ACMaxGPULimitInMilliwatts);
-
-                SetPowerValues(PcfPowerFields.ACTargetTPPLimit, updatedValues);
-            }
-        }
-
-        /// <summary>
-        ///     Resets the Total Processing Power Target override, releasing Channel 1 and restoring native dynamic EC thermal scaling.
-        /// </summary>
-        /// <exception cref="ObjectDisposedException">The controller instance has been disposed.</exception>
-        /// <exception cref="NVIDIAApiException">An error occurred while writing to the NVIDIA driver.</exception>
-        public void ResetTargetProcessingPowerOffset()
-        {
-            lock (_sync)
-            {
-                ThrowIfDisposed();
-
-                var values = GetPowerValues();
-                var updatedValues = new PcfPowerValues(
-                    uint.MaxValue,
-                    values.ACDefaultGPULimitInMilliwatts,
-                    values.ACMinGPULimitInMilliwatts,
-                    values.ACMaxGPULimitInMilliwatts);
-
-                SetPowerValues(PcfPowerFields.ACTargetTPPLimit, updatedValues);
-            }
         }
 
         /// <summary>
