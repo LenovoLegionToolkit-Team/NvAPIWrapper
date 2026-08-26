@@ -175,21 +175,15 @@ namespace NvAPIWrapper.GPU
         /// <summary>
         ///     Updates the Total Processing Power Target offset from baseline in Watts.
         /// </summary>
-        /// <param name="offsetInWatts">The offset in Watts to add to the baseline TGP (must be non-negative).</param>
-        /// <exception cref="ArgumentOutOfRangeException"><paramref name="offsetInWatts"/> is negative.</exception>
+        /// <param name="offsetInWatts">The positive offset in Watts to add to the baseline TGP.</param>
+        /// <exception cref="ArgumentOutOfRangeException"><paramref name="offsetInWatts"/> is zero or negative.</exception>
         /// <exception cref="ObjectDisposedException">The controller instance has been disposed.</exception>
         /// <exception cref="NVIDIAApiException">An error occurred while writing to the NVIDIA driver.</exception>
         public void SetTargetProcessingPowerOffsetInWatts(int offsetInWatts)
         {
-            if (offsetInWatts < 0)
+            if (offsetInWatts <= 0)
             {
-                throw new ArgumentOutOfRangeException(nameof(offsetInWatts), "Offset in Watts must be non-negative.");
-            }
-
-            if (offsetInWatts == 0)
-            {
-                ResetTargetProcessingPowerOffset();
-                return;
+                throw new ArgumentOutOfRangeException(nameof(offsetInWatts), "Offset in Watts must be positive.");
             }
 
             lock (_sync)
