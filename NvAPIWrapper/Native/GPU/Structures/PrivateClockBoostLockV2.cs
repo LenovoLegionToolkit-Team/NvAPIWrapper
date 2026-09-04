@@ -69,7 +69,8 @@ namespace NvAPIWrapper.Native.GPU.Structures
         }
 
         /// <summary>
-        ///     Creates a reset configuration to return clocks to dynamic management
+        ///     Creates a reset configuration to return clock and performance state domains (0, 1, 4, 5) to dynamic management.
+        ///     To reset voltage lock (Domain 6), use <see cref="CreateVoltageReset" />.
         /// </summary>
         public static PrivateClockBoostLockV2 CreateDynamicReset()
         {
@@ -79,6 +80,29 @@ namespace NvAPIWrapper.Native.GPU.Structures
                 ClockBoostLock.CreateDynamicReset(1),
                 ClockBoostLock.CreateDynamicReset(4),
                 ClockBoostLock.CreateDynamicReset(5),
+            });
+        }
+
+        /// <summary>
+        ///     Creates a lock configuration for a target voltage (Domain 6)
+        /// </summary>
+        /// <param name="voltageInMicroV">The target voltage in uV.</param>
+        public static PrivateClockBoostLockV2 CreateVoltageLock(uint voltageInMicroV)
+        {
+            return new PrivateClockBoostLockV2(new[]
+            {
+                ClockBoostLock.CreateVoltageLock(voltageInMicroV)
+            });
+        }
+
+        /// <summary>
+        ///     Creates a reset configuration for voltage (Domain 6) to return to dynamic management
+        /// </summary>
+        public static PrivateClockBoostLockV2 CreateVoltageReset()
+        {
+            return new PrivateClockBoostLockV2(new[]
+            {
+                ClockBoostLock.CreateVoltageReset()
             });
         }
 
@@ -203,6 +227,37 @@ namespace NvAPIWrapper.Native.GPU.Structures
                 lockEntry._ClockDomain = (PublicClockDomain)domain;
                 lockEntry._Mode = 0;
                 lockEntry._LockMode = 0;
+                lockEntry._Value = 0;
+                lockEntry._VoltageInMicroV = 0;
+                lockEntry._Flag = 0;
+                return lockEntry;
+            }
+
+            /// <summary>
+            ///     Creates a voltage lock entry (Domain 6, Manual mode)
+            /// </summary>
+            /// <param name="voltageInMicroV">The target voltage in uV.</param>
+            public static ClockBoostLock CreateVoltageLock(uint voltageInMicroV)
+            {
+                var lockEntry = new ClockBoostLock();
+                lockEntry._ClockDomain = PublicClockDomain.Voltage;
+                lockEntry._Mode = 0;
+                lockEntry._LockMode = ClockLockMode.Manual;
+                lockEntry._Value = 0;
+                lockEntry._VoltageInMicroV = voltageInMicroV;
+                lockEntry._Flag = 0;
+                return lockEntry;
+            }
+
+            /// <summary>
+            ///     Creates a voltage reset entry (Domain 6, Dynamic mode)
+            /// </summary>
+            public static ClockBoostLock CreateVoltageReset()
+            {
+                var lockEntry = new ClockBoostLock();
+                lockEntry._ClockDomain = PublicClockDomain.Voltage;
+                lockEntry._Mode = 0;
+                lockEntry._LockMode = ClockLockMode.None;
                 lockEntry._Value = 0;
                 lockEntry._VoltageInMicroV = 0;
                 lockEntry._Flag = 0;

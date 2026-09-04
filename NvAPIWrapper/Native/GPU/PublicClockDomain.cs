@@ -1,4 +1,4 @@
-﻿using NvAPIWrapper.Native.GPU.Structures;
+using NvAPIWrapper.Native.GPU.Structures;
 
 namespace NvAPIWrapper.Native.GPU
 {
@@ -21,6 +21,11 @@ namespace NvAPIWrapper.Native.GPU
         ///     Memory clock
         /// </summary>
         Memory = 4,
+
+        /// <summary>
+        ///     Voltage / V/F curve lock
+        /// </summary>
+        Voltage = 6,
 
         /// <summary>
         ///     Processor clock

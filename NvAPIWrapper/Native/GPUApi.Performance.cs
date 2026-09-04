@@ -95,13 +95,17 @@ namespace NvAPIWrapper.Native
 
         /// <summary>
         ///     [PRIVATE] - [Pascal Only]
-        ///     Gets the clock boost lock for the passed GPU handle.
+        ///     Gets the clock boost lock for the passed GPU handle and target clock domain.
         /// </summary>
         /// <param name="gpuHandle">The handle of the GPU to perform the operation on.</param>
+        /// <param name="clockDomain">The clock domain to query. Defaults to <see cref="PublicClockDomain.Graphics" />.</param>
         /// <returns>The GPU clock boost lock.</returns>
-        public static PrivateClockBoostLockV2 GetClockBoostLock(PhysicalGPUHandle gpuHandle)
+        public static PrivateClockBoostLockV2 GetClockBoostLock(
+            PhysicalGPUHandle gpuHandle,
+            PublicClockDomain clockDomain = PublicClockDomain.Graphics)
         {
-            var instance = typeof(PrivateClockBoostLockV2).Instantiate<PrivateClockBoostLockV2>();
+            var lockEntry = new PrivateClockBoostLockV2.ClockBoostLock(clockDomain, ClockLockMode.None, 0);
+            var instance = new PrivateClockBoostLockV2(new[] { lockEntry });
 
             using (var clockLockReference = ValueTypeReference.FromValueType(instance))
             {
