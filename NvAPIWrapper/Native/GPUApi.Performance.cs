@@ -102,6 +102,15 @@ namespace NvAPIWrapper.Native
         public static PrivateClientClkVFPointsStatusV1 GetClientClkVFPointsStatus(PhysicalGPUHandle gpuHandle)
         {
             var instance = typeof(PrivateClientClkVFPointsStatusV1).Instantiate<PrivateClientClkVFPointsStatusV1>();
+            var mask = GetClockBoostMask(gpuHandle);
+            if (mask._Masks != null && instance._ReservedHeader != null)
+            {
+                Array.Copy(mask._Masks, 0, instance._ReservedHeader, 0, Math.Min(mask._Masks.Length, Math.Min(instance._ReservedHeader.Length, 4)));
+            }
+            if (mask._Unknown1 != null && instance._ReservedHeader != null && instance._ReservedHeader.Length >= 8)
+            {
+                Array.Copy(mask._Unknown1, 0, instance._ReservedHeader, 4, Math.Min(mask._Unknown1.Length, Math.Min(instance._ReservedHeader.Length - 4, 4)));
+            }
 
             using (var pointsStatusReference = ValueTypeReference.FromValueType(instance))
             {
@@ -210,6 +219,15 @@ namespace NvAPIWrapper.Native
         public static PrivateClockBoostTableV1 GetClockBoostTable(PhysicalGPUHandle gpuHandle)
         {
             var instance = typeof(PrivateClockBoostTableV1).Instantiate<PrivateClockBoostTableV1>();
+            var mask = GetClockBoostMask(gpuHandle);
+            if (mask._Masks != null && instance._Masks != null)
+            {
+                Array.Copy(mask._Masks, 0, instance._Masks, 0, Math.Min(mask._Masks.Length, instance._Masks.Length));
+            }
+            if (mask._Unknown1 != null && instance._Unknown1 != null)
+            {
+                Array.Copy(mask._Unknown1, 0, instance._Unknown1, 0, Math.Min(mask._Unknown1.Length, Math.Min(instance._Unknown1.Length, 4)));
+            }
 
             using (var clockTableReference = ValueTypeReference.FromValueType(instance))
             {
@@ -488,6 +506,16 @@ namespace NvAPIWrapper.Native
         /// <param name="clockBoostTable">The new clock table.</param>
         public static void SetClockBoostTable(PhysicalGPUHandle gpuHandle, PrivateClockBoostTableV1 clockBoostTable)
         {
+            var mask = GetClockBoostMask(gpuHandle);
+            if (mask._Masks != null && clockBoostTable._Masks != null)
+            {
+                Array.Copy(mask._Masks, 0, clockBoostTable._Masks, 0, Math.Min(mask._Masks.Length, clockBoostTable._Masks.Length));
+            }
+            if (mask._Unknown1 != null && clockBoostTable._Unknown1 != null)
+            {
+                Array.Copy(mask._Unknown1, 0, clockBoostTable._Unknown1, 0, Math.Min(mask._Unknown1.Length, Math.Min(clockBoostTable._Unknown1.Length, 4)));
+            }
+
             using (var clockTableReference = ValueTypeReference.FromValueType(clockBoostTable))
             {
                 var status = DelegateFactory.GetDelegate<Delegates.GPU.NvAPI_GPU_SetClockBoostTable>()(

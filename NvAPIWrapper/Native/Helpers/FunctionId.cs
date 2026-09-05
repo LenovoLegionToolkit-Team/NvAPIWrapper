@@ -666,7 +666,7 @@ namespace NvAPIWrapper.Native.Helpers
         NvAPI_GPU_GetAllClocks = 0x1BD69F49,
         NvAPI_GPU_GetAllGpusOnSameBoard = 0x4DB019E6,
         NvAPI_GPU_GetBarInfo = 0xE4B701E3,
-        NvAPI_GPU_GetClientClkVFPointsStatus = 0x215372d4,
+        NvAPI_GPU_GetClientClkVFPointsStatus = 0x21537ad4,
         NvAPI_GPU_GetClockBoostLock = 0xe440b867, // unknown name, NVAPI_ID_CURVE_GET
         NvAPI_GPU_GetClockBoostMask = 0x507b4b59,
         NvAPI_GPU_GetClockBoostRanges = 0x64b43a6a,
