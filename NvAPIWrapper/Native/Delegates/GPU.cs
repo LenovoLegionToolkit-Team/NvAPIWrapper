@@ -232,6 +232,12 @@ namespace NvAPIWrapper.Native.Delegates
         public delegate Status NvAPI_GPU_GetBusType(
             [In] PhysicalGPUHandle physicalGpu,
             [Out] out GPUBusType gpuBusType);
+        
+        [FunctionId(FunctionId.NvAPI_GPU_GetClientClkVFPointsStatus)]
+        public delegate Status NvAPI_GPU_GetClientClkVFPointsStatus(
+            [In] PhysicalGPUHandle physicalGpu,
+            [In] [Accepts(typeof(PrivateClientClkVFPointsStatusV1))]
+            ValueTypeReference clientClkVFPointsStatus);
 
         [FunctionId(FunctionId.NvAPI_GPU_GetClockBoostLock)]
         public delegate Status NvAPI_GPU_GetClockBoostLock(

@@ -94,6 +94,32 @@ namespace NvAPIWrapper.Native
         }
 
         /// <summary>
+        ///     [PRIVATE]
+        ///     Gets the client clock V/F points status for the passed GPU handle.
+        /// </summary>
+        /// <param name="gpuHandle">The handle of the GPU to perform the operation on.</param>
+        /// <returns>The GPU client clock V/F points status.</returns>
+        public static PrivateClientClkVFPointsStatusV1 GetClientClkVFPointsStatus(PhysicalGPUHandle gpuHandle)
+        {
+            var instance = typeof(PrivateClientClkVFPointsStatusV1).Instantiate<PrivateClientClkVFPointsStatusV1>();
+
+            using (var pointsStatusReference = ValueTypeReference.FromValueType(instance))
+            {
+                var status = DelegateFactory.GetDelegate<Delegates.GPU.NvAPI_GPU_GetClientClkVFPointsStatus>()(
+                    gpuHandle,
+                    pointsStatusReference
+                );
+
+                if (status != Status.Ok)
+                {
+                    throw new NVIDIAApiException(status);
+                }
+
+                return pointsStatusReference.ToValueType<PrivateClientClkVFPointsStatusV1>(typeof(PrivateClientClkVFPointsStatusV1));
+            }
+        }
+
+        /// <summary>
         ///     [PRIVATE] - [Pascal Only]
         ///     Gets the clock boost lock for the passed GPU handle and target clock domain.
         /// </summary>
