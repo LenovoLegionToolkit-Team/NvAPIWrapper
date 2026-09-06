@@ -506,14 +506,21 @@ namespace NvAPIWrapper.Native
         /// <param name="clockBoostTable">The new clock table.</param>
         public static void SetClockBoostTable(PhysicalGPUHandle gpuHandle, PrivateClockBoostTableV1 clockBoostTable)
         {
-            var mask = GetClockBoostMask(gpuHandle);
-            if (mask._Masks != null && clockBoostTable._Masks != null)
+            var currentTable = GetClockBoostTable(gpuHandle);
+            if (currentTable._Masks != null && clockBoostTable._Masks != null)
             {
-                Array.Copy(mask._Masks, 0, clockBoostTable._Masks, 0, Math.Min(mask._Masks.Length, clockBoostTable._Masks.Length));
+                Array.Copy(currentTable._Masks, 0, clockBoostTable._Masks, 0, Math.Min(currentTable._Masks.Length, clockBoostTable._Masks.Length));
             }
-            if (mask._Unknown1 != null && clockBoostTable._Unknown1 != null)
+            if (currentTable._Unknown1 != null && clockBoostTable._Unknown1 != null)
             {
-                Array.Copy(mask._Unknown1, 0, clockBoostTable._Unknown1, 0, Math.Min(mask._Unknown1.Length, Math.Min(clockBoostTable._Unknown1.Length, 4)));
+                Array.Copy(currentTable._Unknown1, 0, clockBoostTable._Unknown1, 0, Math.Min(currentTable._Unknown1.Length, Math.Min(clockBoostTable._Unknown1.Length, 4)));
+            }
+            if (currentTable._GPUDeltas != null && clockBoostTable._GPUDeltas != null)
+            {
+                for (var i = 0; i < Math.Min(currentTable._GPUDeltas.Length, clockBoostTable._GPUDeltas.Length); i++)
+                {
+                    clockBoostTable._GPUDeltas[i]._Unknown1 = currentTable._GPUDeltas[i]._Unknown1;
+                }
             }
 
             using (var clockTableReference = ValueTypeReference.FromValueType(clockBoostTable))
