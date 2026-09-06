@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Runtime.InteropServices;
 using NvAPIWrapper.Native.Attributes;
 using NvAPIWrapper.Native.General.Structures;
@@ -14,12 +14,9 @@ namespace NvAPIWrapper.Native.GPU.Structures
     [StructureVersion(1)]
     public struct PrivateClockBoostTableV1 : IInitializable
     {
-        internal const int MaxNumberOfMasks = 4;
-        internal const int MaxNumberOfUnknown1 = 12;
-        internal const int MaxNumberOfGPUDeltas = 80;
-        internal const int MaxNumberOfMemoryFilled = 23;
-        internal const int MaxNumberOfMemoryDeltas = 23;
-        internal const int MaxNumberOfUnknown2 = 1529;
+        internal const int MaxNumberOfMasks = 8;
+        internal const int MaxNumberOfUnknown1 = 8;
+        internal const int MaxNumberOfGPUDeltas = 255;
 
         internal StructureVersion _Version;
 
@@ -31,15 +28,6 @@ namespace NvAPIWrapper.Native.GPU.Structures
 
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = MaxNumberOfGPUDeltas)]
         internal GPUDelta[] _GPUDeltas;
-
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = MaxNumberOfMemoryFilled)]
-        internal uint[] _MemoryFilled;
-
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = MaxNumberOfMemoryDeltas)]
-        internal int[] _MemoryDeltas;
-
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = MaxNumberOfUnknown2)]
-        internal uint[] _Unknown2;
 
         /// <summary>
         ///     Gets a list of clock delta entries

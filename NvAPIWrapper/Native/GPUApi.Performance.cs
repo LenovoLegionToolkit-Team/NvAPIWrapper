@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics.CodeAnalysis;
 using NvAPIWrapper.Native.Exceptions;
 using NvAPIWrapper.Native.General;
+using NvAPIWrapper.Native.General.Structures;
 using NvAPIWrapper.Native.GPU;
 using NvAPIWrapper.Native.GPU.Structures;
 using NvAPIWrapper.Native.Helpers;
@@ -105,11 +106,11 @@ namespace NvAPIWrapper.Native
             var mask = GetClockBoostMask(gpuHandle);
             if (mask._Masks != null && instance._ReservedHeader != null)
             {
-                Array.Copy(mask._Masks, 0, instance._ReservedHeader, 0, Math.Min(mask._Masks.Length, Math.Min(instance._ReservedHeader.Length, 4)));
+                Array.Copy(mask._Masks, 0, instance._ReservedHeader, 0, Math.Min(mask._Masks.Length, Math.Min(instance._ReservedHeader.Length, 8)));
             }
             if (mask._Unknown1 != null && instance._ReservedHeader != null && instance._ReservedHeader.Length >= 8)
             {
-                Array.Copy(mask._Unknown1, 0, instance._ReservedHeader, 4, Math.Min(mask._Unknown1.Length, Math.Min(instance._ReservedHeader.Length - 4, 4)));
+                Array.Copy(mask._Unknown1, 0, instance._ReservedHeader, 8, Math.Min(mask._Unknown1.Length, instance._ReservedHeader.Length - 8));
             }
 
             using (var pointsStatusReference = ValueTypeReference.FromValueType(instance))
@@ -226,7 +227,7 @@ namespace NvAPIWrapper.Native
             }
             if (mask._Unknown1 != null && instance._Unknown1 != null)
             {
-                Array.Copy(mask._Unknown1, 0, instance._Unknown1, 0, Math.Min(mask._Unknown1.Length, Math.Min(instance._Unknown1.Length, 4)));
+                Array.Copy(mask._Unknown1, 0, instance._Unknown1, 0, Math.Min(mask._Unknown1.Length, instance._Unknown1.Length));
             }
 
             using (var clockTableReference = ValueTypeReference.FromValueType(instance))
@@ -507,19 +508,32 @@ namespace NvAPIWrapper.Native
         public static void SetClockBoostTable(PhysicalGPUHandle gpuHandle, PrivateClockBoostTableV1 clockBoostTable)
         {
             var currentTable = GetClockBoostTable(gpuHandle);
-            if (currentTable._Masks != null && clockBoostTable._Masks != null)
+
+            clockBoostTable._Masks ??= new uint[PrivateClockBoostTableV1.MaxNumberOfMasks];
+            clockBoostTable._Unknown1 ??= new uint[PrivateClockBoostTableV1.MaxNumberOfUnknown1];
+            clockBoostTable._GPUDeltas ??= new PrivateClockBoostTableV1.GPUDelta[PrivateClockBoostTableV1.MaxNumberOfGPUDeltas];
+            if (clockBoostTable._Version.VersionNumber == 0)
+            {
+                clockBoostTable._Version = new StructureVersion(1, typeof(PrivateClockBoostTableV1));
+            }
+
+            if (currentTable._Masks != null)
             {
                 Array.Copy(currentTable._Masks, 0, clockBoostTable._Masks, 0, Math.Min(currentTable._Masks.Length, clockBoostTable._Masks.Length));
             }
-            if (currentTable._Unknown1 != null && clockBoostTable._Unknown1 != null)
+            if (currentTable._Unknown1 != null)
             {
-                Array.Copy(currentTable._Unknown1, 0, clockBoostTable._Unknown1, 0, Math.Min(currentTable._Unknown1.Length, Math.Min(clockBoostTable._Unknown1.Length, 4)));
+                Array.Copy(currentTable._Unknown1, 0, clockBoostTable._Unknown1, 0, Math.Min(currentTable._Unknown1.Length, clockBoostTable._Unknown1.Length));
             }
-            if (currentTable._GPUDeltas != null && clockBoostTable._GPUDeltas != null)
+            if (currentTable._GPUDeltas != null)
             {
                 for (var i = 0; i < Math.Min(currentTable._GPUDeltas.Length, clockBoostTable._GPUDeltas.Length); i++)
                 {
                     clockBoostTable._GPUDeltas[i]._Unknown1 = currentTable._GPUDeltas[i]._Unknown1;
+                    if (clockBoostTable._GPUDeltas[i]._Unknown1 != 0)
+                    {
+                        clockBoostTable._GPUDeltas[i]._FrequencyDeltaInkHz = 0;
+                    }
                 }
             }
 

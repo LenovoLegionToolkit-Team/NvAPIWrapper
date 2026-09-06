@@ -1,4 +1,4 @@
-﻿using System.Runtime.InteropServices;
+using System.Runtime.InteropServices;
 using NvAPIWrapper.Native.Attributes;
 using NvAPIWrapper.Native.General.Structures;
 using NvAPIWrapper.Native.Interfaces;
@@ -12,10 +12,9 @@ namespace NvAPIWrapper.Native.GPU.Structures
     [StructureVersion(1)]
     public struct PrivateClockBoostMasksV1 : IInitializable
     {
-        internal const int MaxMasks = 4;
+        internal const int MaxMasks = 8;
         internal const int MaxUnknown1 = 8;
-        internal const int MaxClockBoostMasks = 103;
-        internal const int MaxUnknown2 = 916;
+        internal const int MaxClockBoostMasks = 255;
 
         internal StructureVersion _Version;
 
@@ -27,9 +26,6 @@ namespace NvAPIWrapper.Native.GPU.Structures
 
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = MaxClockBoostMasks)]
         internal readonly ClockBoostMask[] _ClocksBoostMasks;
-
-        [MarshalAs(UnmanagedType.ByValArray, SizeConst = MaxUnknown2)]
-        internal readonly uint[] _Unknown2;
 
         /// <summary>
         ///     Gets a list of clock boost masks
