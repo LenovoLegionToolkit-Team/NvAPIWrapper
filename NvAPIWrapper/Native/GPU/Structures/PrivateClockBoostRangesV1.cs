@@ -1,4 +1,4 @@
-﻿using System.Linq;
+using System.Linq;
 using System.Runtime.InteropServices;
 using NvAPIWrapper.Native.Attributes;
 using NvAPIWrapper.Native.General.Structures;
@@ -40,7 +40,7 @@ namespace NvAPIWrapper.Native.GPU.Structures
         public struct ClockBoostRange
         {
             internal uint _Unknown1;
-            internal ClockType _ClockType;
+            internal PublicClockDomain _ClockDomain;
             internal uint _Unknown2;
             internal uint _Unknown3;
             internal uint _Unknown4;
@@ -59,11 +59,11 @@ namespace NvAPIWrapper.Native.GPU.Structures
             internal uint _Unknown14;
 
             /// <summary>
-            ///     Gets the clock type
+            ///     Gets the clock domain
             /// </summary>
-            public ClockType ClockType
+            public PublicClockDomain ClockDomain
             {
-                get => _ClockType;
+                get => _ClockDomain;
             }
 
             /// <summary>
