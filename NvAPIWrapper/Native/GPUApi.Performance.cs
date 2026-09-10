@@ -530,10 +530,6 @@ namespace NvAPIWrapper.Native
                 for (var i = 0; i < Math.Min(currentTable._GPUDeltas.Length, clockBoostTable._GPUDeltas.Length); i++)
                 {
                     clockBoostTable._GPUDeltas[i]._Unknown1 = currentTable._GPUDeltas[i]._Unknown1;
-                    if (clockBoostTable._GPUDeltas[i]._Unknown1 != 0)
-                    {
-                        clockBoostTable._GPUDeltas[i]._FrequencyDeltaInkHz = 0;
-                    }
                 }
             }
 
