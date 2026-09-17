@@ -86,6 +86,15 @@ namespace NvAPIWrapper.Native.GPU.Structures
             }
 
             /// <summary>
+            ///     Gets the hardware point mode. A non-zero mode marks a point the driver owns,
+            ///     its frequency delta is never written by the caller.
+            /// </summary>
+            public uint PointMode
+            {
+                get => _Unknown1;
+            }
+
+            /// <summary>
             ///     Creates a new instance of GPUDelta.
             /// </summary>
             /// <param name="frequencyDeltaInkHz">The clock frequency in kHz.</param>

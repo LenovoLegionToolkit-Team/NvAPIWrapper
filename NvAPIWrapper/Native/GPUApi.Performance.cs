@@ -531,7 +531,11 @@ namespace NvAPIWrapper.Native
             {
                 for (var i = 0; i < Math.Min(currentTable._GPUDeltas.Length, clockBoostTable._GPUDeltas.Length); i++)
                 {
-                    clockBoostTable._GPUDeltas[i]._Unknown1 = currentTable._GPUDeltas[i]._Unknown1;
+                    var currentEntry = currentTable._GPUDeltas[i];
+                    var delta = clockBoostTable._GPUDeltas[i].FrequencyDeltaInkHz;
+
+                    clockBoostTable._GPUDeltas[i] = currentEntry;
+                    clockBoostTable._GPUDeltas[i]._FrequencyDeltaInkHz = currentEntry._Unknown1 != 0 ? currentEntry._FrequencyDeltaInkHz : delta;
                 }
             }
 
