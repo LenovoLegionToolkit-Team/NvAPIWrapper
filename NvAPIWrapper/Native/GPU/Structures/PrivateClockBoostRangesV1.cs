@@ -17,7 +17,7 @@ namespace NvAPIWrapper.Native.GPU.Structures
         internal const int MaxNumberOfUnknown = 8;
 
         internal StructureVersion _Version;
-        internal uint _ClockBoostRangesCount;
+        internal uint _ClockDomainMask;
 
         [MarshalAs(UnmanagedType.ByValArray, SizeConst = MaxNumberOfUnknown)]
         internal uint[] _Unknown;
@@ -26,11 +26,20 @@ namespace NvAPIWrapper.Native.GPU.Structures
         internal ClockBoostRange[] _ClockBoostRanges;
 
         /// <summary>
-        ///     Gets a list of clock boost ranges
+        ///     Gets a list of clock boost ranges, one per clock domain present on the GPU
         /// </summary>
         public ClockBoostRange[] ClockBoostRanges
         {
-            get => _ClockBoostRanges.Take((int) _ClockBoostRangesCount).ToArray();
+            get
+            {
+                var present = 0;
+                for (var mask = _ClockDomainMask; mask != 0; mask >>= 1)
+                {
+                    present += (int) (mask & 1);
+                }
+
+                return _ClockBoostRanges.Take(present).ToArray();
+            }
         }
 
         /// <summary>
@@ -51,7 +60,7 @@ namespace NvAPIWrapper.Native.GPU.Structures
             internal uint _Unknown9;
             internal int _RangeMaximumInkHz;
             internal int _RangeMinimumInkHz;
-            internal int _MaximumTemperature;
+            internal int _PointIndexRange;
             internal uint _Unknown10;
             internal uint _Unknown11;
             internal uint _Unknown12;
@@ -67,7 +76,7 @@ namespace NvAPIWrapper.Native.GPU.Structures
             }
 
             /// <summary>
-            ///     Gets the maximum boost frequency in kHz
+            ///     Gets the maximum allowed frequency offset in kHz for this clock domain
             /// </summary>
             public int MaximumInkHz
             {
@@ -75,7 +84,7 @@ namespace NvAPIWrapper.Native.GPU.Structures
             }
 
             /// <summary>
-            ///     Gets the minimum boost frequency in kHz
+            ///     Gets the minimum allowed frequency offset in kHz for this clock domain
             /// </summary>
             public int MinimumInkHz
             {
@@ -83,11 +92,19 @@ namespace NvAPIWrapper.Native.GPU.Structures
             }
 
             /// <summary>
-            ///     Gets the maximum boost temperature
+            ///     Gets the index of the first V/F point of this clock domain inside the client clock boost table
             /// </summary>
-            public int MaximumTemperature
+            public byte FirstPointIndex
             {
-                get => _MaximumTemperature;
+                get => (byte) (_PointIndexRange & 0xFF);
+            }
+
+            /// <summary>
+            ///     Gets the index of the last V/F point of this clock domain inside the client clock boost table
+            /// </summary>
+            public byte LastPointIndex
+            {
+                get => (byte) ((_PointIndexRange >> 8) & 0xFF);
             }
         }
     }

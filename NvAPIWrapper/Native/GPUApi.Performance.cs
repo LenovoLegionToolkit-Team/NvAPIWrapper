@@ -99,10 +99,12 @@ namespace NvAPIWrapper.Native
         ///     Gets the client clock V/F points status for the passed GPU handle.
         /// </summary>
         /// <param name="gpuHandle">The handle of the GPU to perform the operation on.</param>
+        /// <param name="structVersion">The structure version to request. GPUs with an adjusted clock table expect version 2.</param>
         /// <returns>The GPU client clock V/F points status.</returns>
-        public static PrivateClientClkVFPointsStatusV1 GetClientClkVFPointsStatus(PhysicalGPUHandle gpuHandle)
+        public static PrivateClientClkVFPointsStatusV1 GetClientClkVFPointsStatus(PhysicalGPUHandle gpuHandle, int structVersion = 1)
         {
             var instance = typeof(PrivateClientClkVFPointsStatusV1).Instantiate<PrivateClientClkVFPointsStatusV1>();
+            instance._Version = new StructureVersion(structVersion, typeof(PrivateClientClkVFPointsStatusV1));
             var mask = GetClockBoostMask(gpuHandle);
             if (mask._Masks != null && instance._ReservedHeader != null)
             {
@@ -216,10 +218,12 @@ namespace NvAPIWrapper.Native
         ///     Gets the clock boost table for the passed GPU handle.
         /// </summary>
         /// <param name="gpuHandle">The handle of the GPU to perform the operation on.</param>
+        /// <param name="structVersion">The structure version to request. GPUs with an adjusted clock table expect version 2.</param>
         /// <returns>The GPU clock boost table.</returns>
-        public static PrivateClockBoostTableV1 GetClockBoostTable(PhysicalGPUHandle gpuHandle)
+        public static PrivateClockBoostTableV1 GetClockBoostTable(PhysicalGPUHandle gpuHandle, int structVersion = 1)
         {
             var instance = typeof(PrivateClockBoostTableV1).Instantiate<PrivateClockBoostTableV1>();
+            instance._Version = new StructureVersion(structVersion, typeof(PrivateClockBoostTableV1));
             var mask = GetClockBoostMask(gpuHandle);
             if (mask._Masks != null && instance._Masks != null)
             {
@@ -505,17 +509,15 @@ namespace NvAPIWrapper.Native
         /// </summary>
         /// <param name="gpuHandle">The handle of the GPU to perform the operation on.</param>
         /// <param name="clockBoostTable">The new clock table.</param>
-        public static void SetClockBoostTable(PhysicalGPUHandle gpuHandle, PrivateClockBoostTableV1 clockBoostTable)
+        /// <param name="structVersion">The structure version to use. Must match the version the driver serves.</param>
+        public static void SetClockBoostTable(PhysicalGPUHandle gpuHandle, PrivateClockBoostTableV1 clockBoostTable, int structVersion = 1)
         {
-            var currentTable = GetClockBoostTable(gpuHandle);
+            var currentTable = GetClockBoostTable(gpuHandle, structVersion);
 
             clockBoostTable._Masks ??= new uint[PrivateClockBoostTableV1.MaxNumberOfMasks];
             clockBoostTable._Unknown1 ??= new uint[PrivateClockBoostTableV1.MaxNumberOfUnknown1];
             clockBoostTable._GPUDeltas ??= new PrivateClockBoostTableV1.GPUDelta[PrivateClockBoostTableV1.MaxNumberOfGPUDeltas];
-            if (clockBoostTable._Version.VersionNumber == 0)
-            {
-                clockBoostTable._Version = new StructureVersion(1, typeof(PrivateClockBoostTableV1));
-            }
+            clockBoostTable._Version = new StructureVersion(structVersion, typeof(PrivateClockBoostTableV1));
 
             if (currentTable._Masks != null)
             {
