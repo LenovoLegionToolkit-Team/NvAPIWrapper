@@ -84,6 +84,20 @@ namespace NvAPIWrapper.Native.GPU.Structures
         }
 
         /// <summary>
+        ///     Creates a lock configuration for a target performance state without locking the clock frequency, releasing any previous frequency lock
+        /// </summary>
+        public static PrivateClockBoostLockV2 CreatePStateLock(PerformanceStateId stateId)
+        {
+            return new PrivateClockBoostLockV2(new[]
+            {
+                ClockBoostLock.CreateDynamicReset(0),
+                ClockBoostLock.CreateDynamicReset(1),
+                ClockBoostLock.CreatePStateLock(4, stateId),
+                ClockBoostLock.CreatePStateLock(5, stateId),
+            });
+        }
+
+        /// <summary>
         ///     Creates a lock configuration for a target voltage (Domain 6)
         /// </summary>
         /// <param name="voltageInMicroV">The target voltage in uV.</param>
